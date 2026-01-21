@@ -3,11 +3,6 @@
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
   "description": "A simple example of a Manifest V3 extension.",
-  // "icons": {
-  //   // "16": "images/icon-16.png",
-  //   // "48": "images/icon-48.png",
-  //   // "128": "images/icon-128.png"
-  // },
   "permissions": [
     "storage",
     "activeTab",
@@ -15,11 +10,7 @@
   ],
   "action": {
     "default_popup": "index.html"
-    // "default_icon": "images/icon-16.png"
   },
-  // "background": {
-  //   "service_worker": "background.js"
-  // },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
