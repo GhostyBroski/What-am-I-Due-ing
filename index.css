@@ -1,0 +1,152 @@
+/* ======================
+   Global Reset & Base
+====================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    width: 500px;              
+    min-height: 600px;
+}
+
+/* ======================
+   Header & Footer
+====================== */
+header {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+}
+
+footer {
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #777;
+    border-top: 1px solid #ddd;
+    background-color: white;
+}
+
+/* ======================
+   Main Layout
+====================== */
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+/* ======================
+   Class List (Buttons)
+====================== */
+.class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.class-tag {
+    padding: 0.75rem;
+    border-radius: 999px;
+    background-color: white;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.class-tag:hover {
+    background-color: #eee;
+    transform: translateY(-1px);
+}
+
+.class-tag h1 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.class-tag p {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* ======================
+   Circle Progress Display
+====================== */
+.circle-progress-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+}
+
+.circle-progress-display svg {
+    width: 140px;
+    height: 140px;
+}
+
+/* ======================
+   Assignment List
+====================== */
+main > div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ======================
+   Assignment Card
+====================== */
+.todo-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid #ddd;
+}
+
+/* Checkbox button */
+.todo-item button {
+    grid-row: 1 / -1;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #777;
+    background: none;
+    cursor: pointer;
+}
+
+/* Course code */
+.todo-item h1 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Assignment title */
+.todo-item h2 {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Due date info */
+.todo-item p {
+    font-size: 0.75rem;
+    color: #666;
+}
