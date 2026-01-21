@@ -1,0 +1,54 @@
+/* ======================
+   Assignment List
+====================== */
+main > div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ======================
+   Assignment Card
+====================== */
+.todo-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid #ddd;
+}
+
+/* Checkbox button */
+.todo-item button {
+    grid-row: 1 / -1;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #777;
+    background: none;
+    cursor: pointer;
+}
+
+/* Course code */
+.todo-item h1 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Assignment title */
+.todo-item h2 {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Due date info */
+.todo-item p {
+    font-size: 0.75rem;
+    color: #666;
+}
