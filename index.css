@@ -130,6 +130,12 @@ main > div:last-child {
     border: 2px solid #777;
     background: none;
     cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.todo-item button:hover {
+    background-color: #eee;
+    transform: translateY(-1px);
 }
 
 /* Course code */
