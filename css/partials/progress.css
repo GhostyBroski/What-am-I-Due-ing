@@ -1,0 +1,17 @@
+/* ======================
+   Circle Progress Display
+====================== */
+.circle-progress-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+}
+
+.circle-progress-display svg {
+    width: 140px;
+    height: 140px;
+}

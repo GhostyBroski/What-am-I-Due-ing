@@ -1,0 +1,32 @@
+/* ======================
+   Class List (Buttons)
+====================== */
+.class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.class-tag {
+    padding: 0.75rem;
+    border-radius: 999px;
+    background-color: white;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.class-tag:hover {
+    background-color: #eee;
+    transform: translateY(-1px);
+}
+
+.class-tag h1 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.class-tag p {
+    font-size: 0.75rem;
+    color: #666;
+}
