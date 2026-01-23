@@ -21,6 +21,13 @@ main > div:last-child {
     background-color: white;
     border-radius: 0.75rem;
     border: 1px solid #ddd;
+    transition: background-color 0.2s, transform 0.1s;
+    cursor: pointer;
+}
+
+.todo-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-1px);
 }
 
 /* Checkbox button */

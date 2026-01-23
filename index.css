@@ -119,6 +119,13 @@ main > div:last-child {
     background-color: white;
     border-radius: 0.75rem;
     border: 1px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.todo-item:hover {
+    background-color: #fcf;
+    transform: translateY(-1px);
 }
 
 /* Checkbox button */
@@ -129,13 +136,11 @@ main > div:last-child {
     border-radius: 50%;
     border: 2px solid #777;
     background: none;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
 }
 
-.todo-item:hover {
-    background-color: #eee;
-    transform: translateY(-1px);
+.todo-item button {
+    border-color: #eee
+    ;
 }
 
 /* Course code */
