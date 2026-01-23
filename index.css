@@ -161,3 +161,7 @@ main > div:last-child {
     font-size: 0.75rem;
     color: #666;
 }
+.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
