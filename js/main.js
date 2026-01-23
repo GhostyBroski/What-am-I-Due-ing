@@ -18,3 +18,21 @@ classTags.forEach((tag, index) => {
     window.open(classLinks[index], "_blank");
   });
 });
+// Get all todo items
+const todoItems = document.querySelectorAll(".todo-item");
+
+todoItems.forEach(item => {
+  const button = item.querySelector("button");
+
+  button.addEventListener("click", () => {
+    // Toggle completed class on everything EXCEPT the button
+    item.querySelectorAll("h1, h2, p").forEach(el => {
+      el.classList.toggle("completed");
+    });
+
+    // Optional: fill the circle when completed
+    button.style.backgroundColor =
+      button.style.backgroundColor === "gray" ? "white" : "gray";
+  });
+});
+
