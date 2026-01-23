@@ -2,31 +2,30 @@
   "manifest_version": 3,
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
-  "description": "A simple example of a Manifest V3 extension.",
-  // "icons": {
-  //   // "16": "images/icon-16.png",
-  //   // "48": "images/icon-48.png",
-  //   // "128": "images/icon-128.png"
-  // },
+  "description": "A to-do and class tracker Chrome extension.",
+
   "permissions": [
     "storage",
     "activeTab",
     "scripting"
   ],
+
   "action": {
     "default_popup": "index.html"
-    // "default_icon": "images/icon-16.png"
   },
-  // "background": {
-  //   "service_worker": "background.js"
-  // },
+
+  "background": {
+    "service_worker": "main.js"
+  },
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["main.js"],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ]
 }
+
 
   
