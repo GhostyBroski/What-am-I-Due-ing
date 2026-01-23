@@ -133,7 +133,7 @@ main > div:last-child {
     transition: background-color 0.2s, transform 0.1s;
 }
 
-.todo-item button:hover {
+.todo-item:hover {
     background-color: #eee;
     transform: translateY(-1px);
 }
