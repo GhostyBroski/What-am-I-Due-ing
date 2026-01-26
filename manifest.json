@@ -4,7 +4,6 @@
   "version": "1.0",
   "description": "A to-do and class tracker Chrome extension.",
 
-  "description": "A simple example of a Manifest V3 extension.",
   "permissions": [
     "storage",
     "activeTab",
@@ -16,14 +15,14 @@
   },
 
   "background": {
-    "service_worker": "main.js"
+    "service_worker": "js/main.js"
   },
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-  "content_scripts": [
+      "js": ["content.js"]
+    },
     {
       "matches": ["<all_urls>"],
       "js": ["js/main.js"],
@@ -31,6 +30,5 @@
     }
   ]
 }
-
 
   
