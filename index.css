@@ -167,16 +167,9 @@ main > div:last-child {
     font-weight: 500;
 }
 
-<<<<<<< Updated upstream
-/* Due date info */
-.todo-item p {
-    font-size: 0.75rem;
-    color: #666;
-}
-.completed {
+.todo-item.completed {
     text-decoration: line-through;
-    opacity: 0.6;
-  }
-=======
-
->>>>>>> Stashed changes
+    opacity: 0.5;
+    filter: grayscale(1);
+    transition: all 0.3s ease;
+}
