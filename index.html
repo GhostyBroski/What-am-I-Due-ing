@@ -1,13 +1,53 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <button id="myButton">Click Me!</button>
-  <script src="popup.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>What Am I Due-ing</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+        <header>
+            <h1>To-Due</h1>
+        </header>
+        <main>
+            <div class="class-list">
+                <section class="class-tag">
+                    <h1>CSE 310</h1>
+                    <p>Functional Programming</p>
+                </section>
+                <section class="class-tag">
+                    <h1>CSE 212</h1>
+                    <p>Programming with Data Structures</p>
+                </section>
+                <section class="class-tag">
+                    <h1>[Course Code]</h1>
+                    <p>[Class Name]</p>
+                </section>
+            </div>
+            <div class="circle-progress-display">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="gray"/>
+                </svg>
+            </div>
+            <div>
+                <section class="todo-item">
+                    <button id="myButton"></button>
+                    <h1>CSE 310</h1>
+                    <h2>W01-Prepare:Semester Planning</h2>
+                    <p>Due Jan 10 at 11:59 PM | 50 points</p>
+                </section>
+                <section class="todo-item">
+                    <button id="myButton"></button>
+                    <h1>[Course Code]</h1>
+                    <h2>[Assignment Name]</h2>
+                    <p>Due [Date] at [Time] | [Point Amount] points</p>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <p>What Am I Due-ing | copyright 2026</p>
+        </footer>
+    </body>
 </html>
