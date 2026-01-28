@@ -1,0 +1,16 @@
+/* ======================
+   Global Reset & Base
+====================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    width: 360px;              /* typical extension popup width */
+    min-height: 600px;
+}
