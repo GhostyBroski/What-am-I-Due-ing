@@ -161,7 +161,16 @@ main > div:last-child {
     font-size: 0.75rem;
     color: #666;
 }
+/* Add this to your CSS file */
 .completed {
     text-decoration: line-through;
+    color: #aaa !important;
     opacity: 0.6;
-  }
+    transition: all 0.3s ease;
+}
+
+/* Optional: change the button color when clicked */
+.todo-item button.active {
+    background-color: #fd3232; 
+    border-color: #000000;
+}
