@@ -1,7 +1,7 @@
-// 1. Select the container holding the todo items
+//  Select the container holding the todo items
 const todoContainer = document.querySelector('.todo-item').parentElement;
 
-// 2. Handle the button clicks (Toggle Completion)
+//  Handle the button clicks (Toggle Completion)
 todoContainer.addEventListener('click', (event) => {
     const clickedButton = event.target.closest('button');
     if (clickedButton) {
@@ -15,7 +15,7 @@ todoContainer.addEventListener('click', (event) => {
     }
 });
 
-// 3. Function to save which items are done
+// Function to save which items are done
 function saveTodoState() {
     const completedItems = [];
     document.querySelectorAll('.todo-item').forEach((item, index) => {
@@ -26,7 +26,7 @@ function saveTodoState() {
     localStorage.setItem('completedTasks', JSON.stringify(completedItems));
 }
 
-// 4. Midnight Check Logic
+//  Midnight Check 
 function checkMidnight() {
     const now = new Date();
     // Check if it is exactly midnight (00:00)
@@ -52,3 +52,19 @@ window.onload = () => {
         if(items[index]) items[index].classList.add('completed');
     });
 };
+//  Select all class-tag elements
+const classTags = document.querySelectorAll('.class-tag');
+
+classTags.forEach(tag => {
+    //  Add a click listener to each tag
+    tag.addEventListener('click', () => {
+        // Replace with your actual Canvas URL
+        const canvasUrl = "https://byui.instructure.com/"; 
+        
+        //  Open Canvas in a new tab
+        window.open(canvasUrl, '_blank');
+    });
+
+    //  Change cursor to pointer so users know it's clickable
+    tag.style.cursor = 'pointer';
+});
