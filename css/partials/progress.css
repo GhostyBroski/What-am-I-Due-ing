@@ -1,36 +1,19 @@
-.circle-progress-display svg {
-    transform: rotate(-90deg); /* makes progress start at top */
+#rings-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: auto;
 }
 
-/* Base ring style */
-.circle-progress-display circle {
-    fill: none;
-}
+.ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 4px purple solid;
 
-.circle-progress-display svg circle {
-    fill: none;
-}
+    width: calc(100% - var(--i) * 20px);
+    height: calc(100% - var(--i) * 20px);
 
-/* Background rings */
-.circle-progress-display svg > circle:nth-child(-n+3) {
-    stroke: #eee;
-    stroke-width: 8;
-}
-
-.circle-progress-display inner circles{
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.6s ease;
-}
-
-.circle-progress-display inner circles:nth-child(4) {
-    stroke: #4a90e2;
-}
-
-.circle-progress-display inner circles:nth-child(5) {
-    stroke: #50e3c2;
-}
-
-.circle-progress-display inner circles:nth-child(6) {
-    stroke: #f5a623;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
