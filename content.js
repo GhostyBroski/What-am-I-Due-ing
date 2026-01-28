@@ -1,17 +1,45 @@
+console.log("CONTENT SCRIPT 322 RUNNING on", location.href);
+
 function collectDashboardTasks() {
     // Convert a nodeList to an array (...) and map to task objects
-    const tasks = [...document.querySelectorAll(".todo-list .todo-item")].map(item => ({
-        // For each item, check if exists if not, return empty string. If exists, get innerText and trim spaces
-        title: item.querySelector(".title")?.innerText?.trim() || "",
-        dueDate: item.querySelector(".due-date")?.innerText?.trim() || "",
-        url: item.querySelector("a")?.href || "",
-        course: item.querySelector(".context")?.innerText?.trim() || "Unknown Course",
-        source: "dashboard"
-    }));
+    const items = [...document.querySelectorAll("#planner-todosidebar-item-list li")];
+
+    if (items.length == 0){
+        console.log("No dashboard tasks found.");
+        return;
+    }
+
+    const tasks = items.map(item => {
+        const title = item.querySelector(".ToDoSidebarItem__Title span")?.innerText?.trim() || "";
+        const course = item.querySelector(".css-79wf76-text")?.innerText?.trim() || "Unknown Course";
+        const dueDate = item.querySelector("ul li")?.innerText?.trim() || "";
+        const url = item.querySelector("a")?.href || "";
+
+        return {
+            title,
+            course,
+            dueDate,
+            url,
+            source: "dashboard"
+        };
+    }).filter(task => task.title && task.url); // Filter out tasks without a title
 
     // Store tasks in chrome storage
     chrome.storage.sync.set({ dashboardTasks: tasks });
+    console.log("Dashboard tasks:", tasks);
 }
+
+// Observe changes in the right sidebar
+const observer = new MutationObserver(() => {
+    collectDashboardTasks();
+});
+
+// Start observing when on dashboard
+if (location.pathname === "/") {
+    observer.observe(document.body, { childList: true, subtree: true });
+    console.log("Observer started for dashboard");
+}
+
 
 
 function collectCourseTasks() {
@@ -40,6 +68,8 @@ function collectCourseTasks() {
         const updated = [...previous, ...tasks];
         chrome.storage.sync.set({ courseTasks: updated });
     });
+
+    console.log("Course tasks:", tasks);
 }
 
 
@@ -53,8 +83,12 @@ if (location.pathname.includes("/courses/")) {
 }
 
 // function loadCanvasTasks() {
-    // chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
-    //     const dashboard = data.dashboardTasks || [];
-    //     const courses = data.courseTasks || [];
+//     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
+//         const dashboard = data.dashboardTasks || [];
+//         const courses = data.courseTasks || [];
+//
+//         const allTasks = [...dashboard, ...courses];
+//     });
+// }
 
-    //     const allTasks = [...dashboard, ...courses];
+
