@@ -42,34 +42,53 @@ function collectCourseTasks() {
     });
 }
 
+// Renders rings based on internet
+// function renderRings() {
+//     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
+//         const dashboard = data.dashboardTasks || [];
+//         const courses = data.courseTasks || [];
+//         const allTasks = [...dashboard, ...courses];
 
-function renderRings() {
-    chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
-        const dashboard = data.dashboardTasks || [];
-        const courses = data.courseTasks || [];
-        const allTasks = [...dashboard, ...courses];
 
+//         const container = document.getElementById("rings-container");
+//         container.innerHTML = ""; // Clear previous rings
 
-        const container = document.getElementById("rings-container");
-        container.innerHTML = ""; // Clear previous rings
-
-        allTasks.forEach((task, i) => {
-            const ring = document.createElement("div");
-            ring.className = "ring";
-            ring.style.setProperty("--i", i);
-            container.appendChild(ring);
-        });
+//         allTasks.forEach((task, i) => {
+//             const ring = document.createElement("div");
+//             ring.className = "ring";
+//             ring.style.setProperty("--i", i);
+//             container.appendChild(ring);
+//         });
     
-    });
-}
+//     });
+// }
+
+
+// Testing renderRings with sample data
+function renderRings(tasks) {
+    const container = document.getElementById("rings-container");
+    container.innerHTML = ""; // Clear previous rings
+
+    tasks.forEach((task, i) => {
+        const ring = document.createElement("div");
+        ring.className = "ring";
+        ring.style.setProperty("--i", i);
+        container.appendChild(ring);
+    })};
+
 
 const testTasks = [
-    { title: "Task 1", dueDate: "2024-06-10", url: "#", course: "Course A", source: "dashboard" },
-    { title: "Task 2", dueDate: "2024-06-12", url: "#", course: "Course B", source: "course" },
-    { title: "Task 3", dueDate: "2024-06-15", url: "#", course: "Course C", source: "dashboard" }
+    { title: "Task 1"}
+    , { title: "Task 2" }
+    , { title: "Task 3" }
+    , { title: "Task 4" }
+    , { title: "Task 5" }
 ];
 
 renderRings(testTasks);
+
+
+
 // Determine which function to call based on the current URL path
 if (location.pathname === "/") {
     collectDashboardTasks();
@@ -85,3 +104,7 @@ if (location.pathname.includes("/courses/")) {
     //     const courses = data.courseTasks || [];
 
     //     const allTasks = [...dashboard, ...courses];
+    //     renderRings(allTasks);
+    // });
+// }
+// loadCanvasTasks();
