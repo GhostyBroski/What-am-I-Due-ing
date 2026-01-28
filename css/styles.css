@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 @import url('partials/global.css');
 @import url('partials/header.css');
 @import url('partials/assignment.css');
@@ -15,3 +16,14 @@ main {
     gap: 1rem;
     padding: 1rem;
 }
+=======
+/* Due date info */
+.todo-item p {
+    font-size: 0.75rem;
+    color: #666;
+}
+.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+>>>>>>> Stashed changes
