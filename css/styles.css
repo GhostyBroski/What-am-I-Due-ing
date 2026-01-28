@@ -1,0 +1,17 @@
+@import url('partials/global.css');
+@import url('partials/header.css');
+@import url('partials/assignment.css');
+@import url('partials/footer.css');
+@import url('partials/buttons.css');
+@import url('partias/progress.css');
+
+/* ======================
+   Main Layout
+====================== */
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    padding: 1rem;
+}

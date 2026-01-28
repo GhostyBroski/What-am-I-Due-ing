@@ -1,0 +1,31 @@
+.circle-progress-display svg {
+    transform: rotate(-90deg); /* makes progress start at top */
+}
+
+/* Base ring style */
+.circle-progress-display circle {
+    fill: none;
+}
+
+.circle-progress-display svg circle {
+    fill: none;
+}
+
+/* Background rings */
+.circle-progress-display svg > circle:nth-child(-n+3) {
+    stroke: #eee;
+    stroke-width: 8;
+}
+
+/* Progress rings */
+.ring {
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+}
+
+/* Colors */
+.ring-cse310 { stroke: #4a90e2; }
+.ring-cse212 { stroke: #50e3c2; }
+.ring-other  { stroke: #f5a623; }
+
