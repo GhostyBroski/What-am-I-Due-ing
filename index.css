@@ -161,15 +161,15 @@ main > div:last-child {
     color: #444;
 }
 
-/* Assignment title */
-.todo-item h2 {
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.todo-item.completed {
+/* When a todo-item is completed, strike through all text inside it */
+.todo-item.completed h1, 
+.todo-item.completed h2, 
+.todo-item.completed p {
     text-decoration: line-through;
     opacity: 0.5;
-    filter: grayscale(1);
-    transition: all 0.3s ease;
+}
+
+/* Optional: change the button color when clicked */
+.todo-item.completed button {
+    background-color: #4CAF50;
 }
