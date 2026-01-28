@@ -17,15 +17,20 @@
     stroke-width: 8;
 }
 
-/* Progress rings */
-.ring {
+.circle-progress-display inner circles{
     stroke-width: 8;
     stroke-linecap: round;
     transition: stroke-dashoffset 0.6s ease;
 }
 
-/* Colors */
-.ring-cse310 { stroke: #4a90e2; }
-.ring-cse212 { stroke: #50e3c2; }
-.ring-other  { stroke: #f5a623; }
+.circle-progress-display inner circles:nth-child(4) {
+    stroke: #4a90e2;
+}
 
+.circle-progress-display inner circles:nth-child(5) {
+    stroke: #50e3c2;
+}
+
+.circle-progress-display inner circles:nth-child(6) {
+    stroke: #f5a623;
+}
