@@ -50,24 +50,38 @@ function collectCourseTasks() {
         document.querySelector(".course-title")?.innerText?.trim() ||
         "Unknown Course";
 
-    // Convert nodeList to array and map to task objects
-    // Assuming assignments are in elements with class "assignment" or "ig-row"
-    const tasks = [...document.querySelectorAll(".assignment, .ig-row")].map(item => ({
-        title: item.querySelector(".ig-title, .title")?.innerText?.trim() || "",
-        dueDate: item.querySelector(".due-date, .ig-details")?.innerText?.trim() || "",
-        url: item.querySelector("a")?.href || "",
-        course: courseName,
-        source: "course"
-    }));
+        // Select assignment rows (Canvas uses both)
+        const items = [
+            ...document.querySelectorAll(".assignment"),
+            ...document.querySelectorAll(".ig-row")
+        ];
 
-    // Append tasks to existing courseTasks in chrome storage
-    chrome.storage.sync.get(["courseTasks"], data => {
-        const previous = data.courseTasks || [];
+        const tasks = items
+            .map(item => {
+                const title =
+                    item.querySelector(".ig-title, .title")?.innerText?.trim() || "";
 
-        // Combine previous tasks with new tasks
-        const updated = [...previous, ...tasks];
-        chrome.storage.sync.set({ courseTasks: updated });
-    });
+                const dueDate =
+                    item.querySelector(".due-date, .ig-details")?.innerText?.trim() || "";
+
+                const url = item.querySelector("a")?.href || "";
+
+                return {
+                    title,
+                    dueDate,
+                    url,
+                    course: courseName,
+                    source: "course"
+                };
+            })
+            .filter(task => task.title && task.url); // limpiar vacíos
+
+        // Append to existing courseTasks
+        chrome.storage.sync.get(["courseTasks"], data => {
+            const previous = data.courseTasks || [];
+            const updated = [...previous, ...tasks];
+            chrome.storage.sync.set({ courseTasks: updated });
+        });
 
     console.log("Course tasks:", tasks);
 }
