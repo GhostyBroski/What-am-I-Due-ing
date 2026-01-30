@@ -1,4 +1,4 @@
-console.log("CONTENT SCRIPT 322 RUNNING on", location.href);
+console.log("CONTENT SCRIPT 2222 RUNNING on", location.href);
 
 function collectDashboardTasks() {
     // Convert a nodeList to an array (...) and map to task objects
@@ -86,53 +86,6 @@ function collectCourseTasks() {
     console.log("Course tasks:", tasks);
 }
 
-// Renders rings based on internet
-function renderRings() {
-    chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
-        const dashboard = data.dashboardTasks || [];
-        const courses = data.courseTasks || [];
-        const allTasks = [...dashboard, ...courses];
-
-
-        const container = document.getElementById("rings-container");
-        container.innerHTML = ""; // Clear previous rings
-
-        allTasks.forEach((task, i) => {
-            const ring = document.createElement("div");
-            ring.className = "ring";
-            ring.style.setProperty("--i", i);
-            container.appendChild(ring);
-        });
-    
-    });
-}
-
-
-// Testing renderRings with sample data
-// function renderRings(tasks) {
-//     const container = document.getElementById("rings-container");
-//     container.innerHTML = ""; // Clear previous rings
-
-//     tasks.forEach((task, i) => {
-//         const ring = document.createElement("div");
-//         ring.className = "ring";
-//         ring.style.setProperty("--i", i);
-//         container.appendChild(ring);
-//     })};
-
-
-// const testTasks = [
-//     { title: "Task 1"}
-//     , { title: "Task 2" }
-//     , { title: "Task 3" }
-//     , { title: "Task 4" }
-//     , { title: "Task 5" }
-// ];
-
-renderRings(testTasks);
-
-
-
 // Determine which function to call based on the current URL path
 if (location.pathname === "/") {
     collectDashboardTasks();
@@ -142,11 +95,94 @@ if (location.pathname.includes("/courses/")) {
     collectCourseTasks();
 }
 
-// function loadCanvasTasks() {
-//     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
-//         const dashboard = data.dashboardTasks || [];
-//         const courses = data.courseTasks || [];
-//
-//         const allTasks = [...dashboard, ...courses];
-//     });
-// }
+
+
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
+    const allTasks = [...dashboardTasks, ...courseTasks];
+    buildProgressRings(allTasks);
+});
+
+function groupByCourse(tasks) {
+    return tasks.reduce((acc, task) => {
+        acc[task.course] ??=[];
+        acc[task.course].push(task);
+        return acc;
+    }, {});
+}
+
+function buildProgressRings(tasks) {
+    const svg = document.getElementById("progressRings");
+    svg.innerHTML = "";
+
+    const courses = Object.entries(groupByCourse(tasks));
+
+    const center = 70;
+    const thickness = 8;
+    const gap = 6;
+    let radius = 60;
+
+    courses.forEach(([course, courseTasks]) => {
+        if (radius <= 10) return; // avoid overlap
+
+        const total = courseTasks.length;
+        const completed = courseTasks.filter(t => t.completed).length;
+        const percent = total === 0 ? 0 : completed / total;
+
+        // Background ring
+        svg.appendChild(makeCircle({
+            r: radius,
+            stroke: "#eee"
+        }));
+
+        // Progress ring
+        svg.appendChild(makeCircle({
+            r: radius,
+            stroke: colorForCourse(course),
+            percent
+        }));
+
+        radius -= thickness + gap;
+    });
+}
+
+function makeCircle({ r, stroke, percent = 1 }) {
+    const circle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+    );
+
+    circle.setAttribute("cx", 70);
+    circle.setAttribute("cy", 70);
+    circle.setAttribute("r", r);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", stroke);
+    circle.setAttribute("stroke-width", 8);
+    circle.style.transform = "rotate(-90deg)";
+    circle.style.transformOrigin = "50% 50%";
+
+    if (percent < 1) {
+        const circumference = 2 * Math.PI * r;
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset =
+            circumference * (1 - percent);
+    }
+
+    return circle;
+}
+
+function colorForCourse(course) {
+    const colors = [
+        "#4a90e2",
+        "#50e3c2",
+        "#f5a623",
+        "#bd10e0",
+        "#7ed321"
+    ];
+
+    let hash = 0;
+    for (let char of course) {
+        hash = (hash + char.charCodeAt(0)) % colors.length;
+    }
+
+    return colors[hash];
+}

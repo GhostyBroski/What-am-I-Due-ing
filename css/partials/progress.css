@@ -17,4 +17,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    --progress: 0;
+    background: conic-gradient(
+        currentColor calc(var(--progress) * 1%), #ddd 0%);
+    mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 8px),
+        black 0
+    );
 }
