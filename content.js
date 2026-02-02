@@ -98,8 +98,7 @@ if (location.pathname.includes("/courses/")) {
 
 
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    const allTasks = [...dashboardTasks, ...courseTasks];
-    buildProgressRings(allTasks);
+    buildProgressRings = ([...dashboardTasks, ...courseTasks]);
 });
 
 function groupByCourse(tasks) {
