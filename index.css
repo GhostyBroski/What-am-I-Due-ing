@@ -11,11 +11,7 @@
 body {
     background-color: #f5f5f5;
     color: #333;
-<<<<<<< Updated upstream
     width: 500px;              
-=======
-    width: 360px;              /* typical extension popup width */
->>>>>>> Stashed changes
     min-height: 600px;
 }
 
@@ -123,7 +119,6 @@ main > div:last-child {
     background-color: white;
     border-radius: 0.75rem;
     border: 1px solid #ddd;
-<<<<<<< Updated upstream
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
@@ -131,8 +126,6 @@ main > div:last-child {
 .todo-item:hover {
     background-color: #fcf;
     transform: translateY(-1px);
-=======
->>>>>>> Stashed changes
 }
 
 /* Checkbox button */
@@ -143,15 +136,12 @@ main > div:last-child {
     border-radius: 50%;
     border: 2px solid #777;
     background: none;
-<<<<<<< Updated upstream
 }
 
 .todo-item button {
     border-color: #eee
     ;
-=======
     cursor: pointer;
->>>>>>> Stashed changes
 }
 
 /* Course code */
@@ -172,4 +162,17 @@ main > div:last-child {
 /* Optional: change the button color when clicked */
 .todo-item.completed button {
     background-color: #4CAF50;
+}
+/* Add this to your CSS file */
+.completed {
+    text-decoration: line-through;
+    color: #aaa !important;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+/* Optional: change the button color when clicked */
+.todo-item button.active {
+    background-color: #fd3232; 
+    border-color: #000000;
 }
