@@ -8,28 +8,52 @@
     </head>
     <body>
         <header>
-            <h1>To-Due</h1>
+            <img id="logo" src="/images/android-chrome-192x192.png" alt="What am I Due-ing logo">
+            <h1 id="title">To-Due</h1>
+            <button class="settings-button"></button>
         </header>
         <main>
+        <!-- Class List -->
             <div class="class-list">
                 <section class="class-tag">
                     <h1>CSE 310</h1>
-                    <p>Functional Programming</p>
+                    <!-- <p>- Applied Programming</p> !!!Make Visible on hover!!! -->
                 </section>
                 <section class="class-tag">
                     <h1>CSE 212</h1>
-                    <p>Programming with Data Structures</p>
+                    <!-- <p>- Programming with Data Structures</p> -->
                 </section>
                 <section class="class-tag">
-                    <h1>[Course Code]</h1>
-                    <p>[Class Name]</p>
+                    <h1>[Course]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
                 </section>
             </div>
+        <!-- Progress Circles -->
             <div class="circle-progress-display">
                 <svg width="140" height="140" viewBox="0 0 140 140">
                     <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="gray"/>
                 </svg>
             </div>
+        <!-- Assignments Heading -->
+            <div id="assignments-heading">
+                <button class="filter-button"></button>
+                <h1>Assignments</h1>
+                <p>1 Week</p> <!-- Assignment filter indicator -->
+                <button class="filter-button"></button>
+            </div>
+        <!-- Assignment List -->
             <div>
                 <section class="todo-item">
                     <button id="myButton"></button>
@@ -38,6 +62,12 @@
                     <p>Due Jan 10 at 11:59 PM | 50 points</p>
                 </section>
                 <section class="todo-item">
+                    <button id="myButton"></button>
+                    <h1>[Course Code]</h1>
+                    <h2>[Assignment Name]</h2>
+                    <p>Due [Date] at [Time] | [Point Amount] points</p>
+                </section>
+                <section class="todo-item late">
                     <button id="myButton"></button>
                     <h1>[Course Code]</h1>
                     <h2>[Assignment Name]</h2>
