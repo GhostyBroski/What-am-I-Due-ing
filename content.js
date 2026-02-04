@@ -94,18 +94,3 @@ if (location.pathname === "/") {
 if (location.pathname.includes("/courses/")) {
     collectCourseTasks();
 }
-
-
-
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    buildProgressRings = ([...dashboardTasks, ...courseTasks]);
-});
-
-function groupByCourse(tasks) {
-    return tasks.reduce((acc, task) => {
-        acc[task.course] ??=[];
-        acc[task.course].push(task);
-        return acc;
-    }, {});
-}
-
