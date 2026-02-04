@@ -1,66 +1,67 @@
-document.getElementById('myButton').addEventListener('click', function(){
-    alert('Button clicked!');
-});
-// Get all class tags
-const classTags = document.querySelectorAll(".class-tag");
+document.addEventListener("DOMContentLoaded", () => {
 
-// URLs for each class (same order as in HTML)
-const classLinks = [
-    // WILL UPDATE THIS TO CONNECT TO INDIVIDUALS CLASSES WHEN WE GET CONNECTED TO CANVAS API!!!!!!!
-  "https://byui.instructure.com/courses/310", // CSE 310
-  "https://byui.instructure.com/courses/212", // CSE 212
-  "https://example.com" // Placeholder class
-];
-classTags.forEach((tag, index) => {
-  tag.style.cursor = "pointer"; // shows it's clickable
+  // 1. Class Tag Redirects
+  const classTags = document.querySelectorAll(".class-tag");
+  const classLinks = [
+    "https://byui.instructure.com/courses/310",
+    "https://byui.instructure.com/courses/212",
+    "https://byui.instructure.com/courses/999" // Fallback link
+  ];
 
-  tag.addEventListener("click", () => {
-    window.open(classLinks[index], "_blank");
+  classTags.forEach((tag, index) => {
+    tag.addEventListener("click", () => {
+      // Use index to pick link, default to Canvas home if out of bounds
+      const url = classLinks[index] || "https://byui.instructure.com/";
+      window.open(url, "_blank");
+    });
   });
-});
-// --- PART A: The Click Handler ---
-const todoItems = document.querySelectorAll(".todo-item");
+
+  const todoItems = document.querySelectorAll(".todo-item");
 
 todoItems.forEach(item => {
-  const button = item.querySelector("button");
+    const button = item.querySelector(".myButton");
+    if (!button) return;
 
-  button.addEventListener("click", () => {
-    // Toggle the strike-through class on the text elements
-    item.querySelectorAll("h1, h2, p").forEach(el => {
-      el.classList.toggle("completed");
+    button.addEventListener("click", (e) => {
+        e.stopPropagation(); 
+
+        // 1. Toggle the visual state of the card
+        item.classList.toggle("completed");
+        
+        // 2. Toggle the button's red/active color
+        button.classList.toggle("active");
+        
+        // 3. Optional: Toggle 'done' if you use that for other logic
+        item.classList.toggle("done");
     });
-    
-    // Toggle the button's look
-    button.classList.toggle("active");
-  });
 });
 
-// --- PART B: The Midnight Checker ---
-function checkMidnight() {
+  // 3. The Midnight Checker (Moved inside so it can access todoItems)
+  function checkMidnight() {
     const now = new Date();
     
-    // Check if it's exactly midnight (Hour 0, Minute 0)
-    // We check seconds to ensure it triggers right at the start of the minute
+    // Check if it's 00:00 (Midnight)
     if (now.getHours() === 0 && now.getMinutes() === 0) {
+        console.log("Midnight cleanup triggered...");
+        
         todoItems.forEach(item => {
-            // Check if this item was marked as completed
-            const isDone = item.querySelector("h1").classList.contains("completed");
-            
-            if (isDone) {
-                // Fade out and remove
-                item.style.transition = "opacity 0.5s ease";
+            // Check if the h1 inside this item has the 'completed' class
+            const title = item.querySelector("h1");
+            if (title && title.classList.contains("completed")) {
+                
+                // Visual Fade Out
+                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
                 item.style.opacity = "0";
+                item.style.transform = "translateX(20px)";
                 
                 setTimeout(() => {
                     item.remove();
-                    // Because it's a Flex/Grid layout, 
-                    // other items will naturally move up!
                 }, 500);
             }
         });
     }
-}
+  }
 
-// Run the check every 60 seconds
-setInterval(checkMidnight, 60000);
-
+  // Run the check every 60 seconds
+  setInterval(checkMidnight, 60000);
+});

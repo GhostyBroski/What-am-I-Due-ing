@@ -157,20 +157,31 @@ main > div:last-child {
 }
 
 /* Due date info */
-.todo-item p {
-    font-size: 0.75rem;
-    color: #666;
-}
-/* Add this to your CSS file */
-.completed {
+
+/* This targets the text specifically when the parent has the class */
+.todo-item.completed h1, 
+.todo-item.completed h2, 
+.todo-item.completed p {
     text-decoration: line-through;
-    color: #aaa !important;
+    color: #999;
     opacity: 0.6;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-/* Optional: change the button color when clicked */
-.todo-item button.active {
+/* Optional: Make the button look checked when active */
+.myButton.active {
     background-color: #fd3232; 
-    border-color: #000000;
+    border-color: #000;
+    position: relative;
 }
+
+/* Adding a small checkmark feel to the active button */
+.myButton.active::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
