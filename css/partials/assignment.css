@@ -1,5 +1,5 @@
 /* ======================
-   Assignment List
+    Assignment List
 ====================== */
 main > div:last-child {
     grid-column: 1 / -1;
@@ -9,7 +9,7 @@ main > div:last-child {
 }
 
 /* ======================
-   Assignment Card
+    Assignment Card
 ====================== */
 .todo-item {
     display: grid;
@@ -32,7 +32,7 @@ main > div:last-child {
 
 /* Checkbox button */
 .todo-item button {
-    grid-row: 1 / -1;
+    grid-row: 2 / 3;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -46,16 +46,26 @@ main > div:last-child {
     font-size: 0.8rem;
     font-weight: 600;
     color: #444;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
 }
 
 /* Assignment title */
 .todo-item h2 {
     font-size: 0.9rem;
     font-weight: 500;
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
 }
 
 /* Due date info */
 .todo-item p {
     font-size: 0.75rem;
     color: #666;
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+}
+
+.late h2{
+    color: red;
 }
