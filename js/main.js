@@ -62,11 +62,9 @@ todoItems.forEach(item => {
     }
   }
 
-<<<<<<< HEAD
   // Run the check every 60 seconds
   setInterval(checkMidnight, 60000);
 });
-=======
 function buildProgressRings(tasks) {
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
@@ -155,4 +153,3 @@ function groupByCourse(tasks) {
         return acc;
     }, {});
 }
->>>>>>> 86255b0e2da92cd6f067b6fc09addbaea0c013e1
