@@ -100,6 +100,14 @@ function removeDuplicates(tasks) {
     });
 }
 
+if (location.pathname === "/") {
+    collectDashboardTasks();
+}
+
+if (location.pathname.includes("/courses/")) {
+    collectCourseTasks();
+}
+
 
 
 // function renderRings() {
@@ -130,13 +138,7 @@ function removeDuplicates(tasks) {
 
 // renderRings(testTasks);
 // Determine which function to call based on the current URL path
-if (location.pathname === "/") {
-    collectDashboardTasks();
-}
 
-if (location.pathname.includes("/courses/")) {
-    collectCourseTasks();
-}
 
 // // function loadCanvasTasks() {
 // //     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], data => {
