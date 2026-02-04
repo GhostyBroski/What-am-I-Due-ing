@@ -16,26 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const todoItems = document.querySelectorAll(".todo-item");
-
-todoItems.forEach(item => {
+  document.querySelectorAll(".todo-item").forEach(item => {
     const button = item.querySelector(".myButton");
     if (!button) return;
 
     button.addEventListener("click", (e) => {
-        e.stopPropagation(); 
+      e.stopPropagation();
 
-        // 1. Toggle the visual state of the card
-        item.classList.toggle("completed");
-        
-        // 2. Toggle the button's red/active color
-        button.classList.toggle("active");
-        
-        // 3. Optional: Toggle 'done' if you use that for other logic
-        item.classList.toggle("done");
+      item.classList.toggle("completed");
+      button.classList.toggle("active");
     });
-});
-
+  });
+  
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
