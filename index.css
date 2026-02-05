@@ -159,12 +159,12 @@ main > div:last-child {
 /* Due date info */
 
 /* This targets the text specifically when the parent has the class */
-/* Completed task style */
-.todo-item.completed h1,
-.todo-item.completed h2,
+/* Target h1, h2, and p ONLY when the parent has the .completed class */
+.todo-item.completed h1, 
+.todo-item.completed h2, 
 .todo-item.completed p {
-    text-decoration: line-through;
-    color: #999;
+    text-decoration: line-through !important;
+    color: #999 !important;
     opacity: 0.6;
 }
 
