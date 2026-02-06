@@ -69,6 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(checkMidnight, 60000);
 });
 function buildProgressRings(tasks) {
+    const title = document.getElementById("title");
+    title.textContent = `You have ${tasks.length} tasks`;
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
 
@@ -146,7 +148,7 @@ function colorForCourse(course) {
 }
 
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    buildProgressRings = ([...dashboardTasks, ...courseTasks]);
+    buildProgressRings([...courseTasks]);           
 });
 
 function groupByCourse(tasks) {
