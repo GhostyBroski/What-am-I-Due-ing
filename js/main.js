@@ -1,17 +1,3 @@
-const title = document.querySelector("h1");
-title.textContent = "You have 10 tasks";
-
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
-
-    const all = [...dashboardTasks, ...courseTasks];
-    const clean = removeDuplicates(all);
-
-    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
-
-    buildProgressRings(tasksOnly);
-});
-
-
 document.addEventListener("DOMContentLoaded", () => {
 
   // 1. Class Tag Redirects
@@ -151,7 +137,9 @@ function colorForCourse(course) {
     return colors[hash];
 }
 
-
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
+    buildProgressRings([...courseTasks]);           
+});
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
