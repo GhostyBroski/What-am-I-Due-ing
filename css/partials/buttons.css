@@ -46,3 +46,63 @@
     overflow: hidden;
     padding-left: 5px;
 }
+.todo-item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: start;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.todo-item h1,
+.todo-item h2,
+.todo-item p {
+    display: block;
+}
+
+.todo-item h1 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a90e2;
+}
+
+.todo-item h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.todo-item p {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.todo-item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+}
+
+.todo-item h1,
+.todo-item h2,
+.todo-item p {
+    grid-column: 2;
+}
+.todo-item.completed h2 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.todo-item.completed h1 {
+    color: #999;
+}
+
+.todo-item.completed {
+    opacity: 0.6;
+    background-color: #fafafa;
+}
+
