@@ -1,33 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Setup Assignment Buttons
+    const buttons = document.querySelectorAll(".myButton");
 
-  // 1. Class Tag Redirects
-  const classTags = document.querySelectorAll(".class-tag");
-  const classLinks = [
-    "https://byui.instructure.com/courses/310",
-    "https://byui.instructure.com/courses/212",
-    "https://byui.instructure.com/courses/999" // Fallback link
-  ];
-
-  classTags.forEach((tag, index) => {
-    tag.addEventListener("click", () => {
-      // Use index to pick link, default to Canvas home if out of bounds
-      const url = classLinks[index] || "https://byui.instructure.com/";
-      window.open(url, "_blank");
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const parent = btn.closest(".todo-item");
+            if (parent) {
+                parent.classList.toggle("completed");
+                btn.classList.toggle("active");
+                
+                // Save state to storage so it persists
+                const taskId = parent.querySelector('h2')?.innerText;
+                if (taskId) {
+                    chrome.storage.local.set({ [taskId]: parent.classList.contains("completed") });
+                }
+            }
+        });
     });
-  });
 
-  document.querySelectorAll(".todo-item").forEach(item => {
-    const button = item.querySelector(".myButton");
-    if (!button) return;
+    // 2. Class Tag Redirects
+    const classTags = document.querySelectorAll(".class-tag");
+    const classLinks = [
+        "https://byui.instructure.com/courses/310",
+        "https://byui.instructure.com/courses/212"
+    ];
 
-    button.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      item.classList.toggle("completed");
-      button.classList.toggle("active");
+    classTags.forEach((tag, index) => {
+        tag.addEventListener("click", () => {
+            const url = classLinks[index] || "https://byui.instructure.com/";
+            window.open(url, "_blank");
+        });
     });
-  });
-  
+
+    classTags.forEach((tag, index) => {
+        tag.addEventListener("click", () => {
+            const url = classLinks[index] || "https://byui.instructure.com/";
+            window.open(url, "_blank");
+        });
+    });
+});
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
