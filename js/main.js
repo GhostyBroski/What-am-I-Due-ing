@@ -1,46 +1,79 @@
-document.addEventListener("DOMContentLoaded", () => {
-    setupTodoButtons();
-    scheduleMidnightCleanup();
+const title = document.querySelector("h1");
+title.textContent = "You have 10 tasks";
+
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
+
+    const all = [...dashboardTasks, ...courseTasks];
+    const clean = removeDuplicates(all);
+
+    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+
+    buildProgressRings(tasksOnly);
 });
 
-function setupTodoButtons() {
-    document.querySelectorAll(".myButton").forEach(button => {
-        button.addEventListener("click", () => {
-            const todoItem = button.closest(".todo-item");
-            if (!todoItem) return;
 
-            todoItem.classList.toggle("completed");
-            button.classList.toggle("active");
-        });
+document.addEventListener("DOMContentLoaded", () => {
+
+  // 1. Class Tag Redirects
+  const classTags = document.querySelectorAll(".class-tag");
+  const classLinks = [
+    "https://byui.instructure.com/courses/310",
+    "https://byui.instructure.com/courses/212",
+    "https://byui.instructure.com/courses/999" // Fallback link
+  ];
+
+  classTags.forEach((tag, index) => {
+    tag.addEventListener("click", () => {
+      // Use index to pick link, default to Canvas home if out of bounds
+      const url = classLinks[index] || "https://byui.instructure.com/";
+      window.open(url, "_blank");
     });
-}
+  });
 
-function scheduleMidnightCleanup() {
+  document.querySelectorAll(".todo-item").forEach(item => {
+    const button = item.querySelector(".myButton");
+    if (!button) return;
+
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      item.classList.toggle("completed");
+      button.classList.toggle("active");
+    });
+  });
+  
+  // 3. The Midnight Checker (Moved inside so it can access todoItems)
+  function checkMidnight() {
     const now = new Date();
-    const midnight = new Date();
-    midnight.setHours(24, 0, 0, 0);
+    
+    // Check if it's 00:00 (Midnight)
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+        console.log("Midnight cleanup triggered...");
+        
+        todoItems.forEach(item => {
+            // Check if the h1 inside this item has the 'completed' class
+            const title = item.querySelector("h1");
+            if (title && title.classList.contains("completed")) {
+                
+                // Visual Fade Out
+                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                item.style.opacity = "0";
+                item.style.transform = "translateX(20px)";
+                
+                setTimeout(() => {
+                    item.remove();
+                }, 500);
+            }
+        });
+    }
+  }
 
-    const delay = midnight - now;
-
-    setTimeout(() => {
-        removeCompletedTodos();
-        scheduleMidnightCleanup();
-    }, delay);
-}
-
-function removeCompletedTodos() {
-    document
-        .querySelectorAll(".todo-item.completed")
-        .forEach(todo => todo.remove());
-}
-
-
-
-
-
+  // Run the check every 60 seconds
+  setInterval(checkMidnight, 60000);
+});
 
 function buildProgressRings(tasks) {
-    const title = document.getElementById("title");
+    const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
@@ -118,9 +151,7 @@ function colorForCourse(course) {
     return colors[hash];
 }
 
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    buildProgressRings([...courseTasks]);           
-});
+
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
@@ -128,4 +159,16 @@ function groupByCourse(tasks) {
         acc[task.course].push(task);
         return acc;
     }, {});
+}
+
+
+// Remove duplicate tasks based on URL
+function removeDuplicates(tasks) {
+    const seen = new Set();
+    return tasks.filter(task => {
+        if (!task.url) return false; // Skip tasks without a URL
+        if (seen.has(task.url)) return false;
+        seen.add(task.url);
+        return true;
+    });
 }
