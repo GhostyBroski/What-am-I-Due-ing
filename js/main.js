@@ -1,62 +1,149 @@
-// Wrap everything in a check to ensure the HTML is loaded first
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // 1. Handle clicking the buttons in the Todo items
-    // We target the main body and listen for clicks on any button
-    document.addEventListener('click', (event) => {
-        const clickedButton = event.target.closest('button');
+  // 1. Class Tag Redirects
+  const classTags = document.querySelectorAll(".class-tag");
+  const classLinks = [
+    "https://byui.instructure.com/courses/310",
+    "https://byui.instructure.com/courses/212",
+    "https://byui.instructure.com/courses/999" // Fallback link
+  ];
+
+  classTags.forEach((tag, index) => {
+    tag.addEventListener("click", () => {
+      // Use index to pick link, default to Canvas home if out of bounds
+      const url = classLinks[index] || "https://byui.instructure.com/";
+      window.open(url, "_blank");
+    });
+  });
+
+  document.querySelectorAll(".todo-item").forEach(item => {
+    const button = item.querySelector(".myButton");
+    if (!button) return;
+
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      item.classList.toggle("completed");
+      button.classList.toggle("active");
+    });
+  });
+  
+  // 3. The Midnight Checker (Moved inside so it can access todoItems)
+  function checkMidnight() {
+    const now = new Date();
+    
+    // Check if it's 00:00 (Midnight)
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+        console.log("Midnight cleanup triggered...");
         
-        // Ensure it's one of your "myButton" buttons
-        if (clickedButton && clickedButton.id === 'myButton') {
-            const parentItem = clickedButton.closest('.todo-item');
-            
-            // Toggle the 'completed' class on the whole section
-            parentItem.classList.toggle('completed');
-            
-            saveTodoState();
-        }
-    });
-
-    // 2. Class-Tag Redirects to Canvas
-    const classTags = document.querySelectorAll('.class-tag');
-    classTags.forEach(tag => {
-        tag.style.cursor = 'pointer';
-        tag.addEventListener('click', () => {
-            window.open("https://byui.instructure.com/", '_blank');
-        });
-    });
-
-    // 3. Save which items are checked to local storage
-    function saveTodoState() {
-        const completedStates = [];
-        document.querySelectorAll('.todo-item').forEach((item, index) => {
-            completedStates.push(item.classList.contains('completed'));
-        });
-        localStorage.setItem('todoStorage', JSON.stringify(completedStates));
-    }
-
-    // 4. Restore the checks when the page refreshes
-    function loadTodoState() {
-        const savedStates = JSON.parse(localStorage.getItem('todoStorage') || "[]");
-        document.querySelectorAll('.todo-item').forEach((item, index) => {
-            if (savedStates[index]) {
-                item.classList.add('completed');
+        todoItems.forEach(item => {
+            // Check if the h1 inside this item has the 'completed' class
+            const title = item.querySelector("h1");
+            if (title && title.classList.contains("completed")) {
+                
+                // Visual Fade Out
+                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                item.style.opacity = "0";
+                item.style.transform = "translateX(20px)";
+                
+                setTimeout(() => {
+                    item.remove();
+                }, 500);
             }
         });
     }
+  }
 
-    // 5. Midnight Cleanup Logic
-    function checkMidnight() {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            document.querySelectorAll('.todo-item.completed').forEach(item => {
-                item.style.display = 'none'; // Item disappears
-            });
-            localStorage.removeItem('todoStorage'); // Clear the "done" list
-        }
+  // Run the check every 60 seconds
+  setInterval(checkMidnight, 60000);
+});
+function buildProgressRings(tasks) {
+    const title = document.getElementById("title");
+    title.textContent = `You have ${tasks.length} tasks`;
+    const svg = document.getElementById("progressRings");
+    svg.innerHTML = "";
+
+    const courses = Object.entries(groupByCourse(tasks));
+
+    const center = 70;
+    const thickness = 8;
+    const gap = 6;
+    let radius = 60;
+
+    courses.forEach(([course, courseTasks]) => {
+        if (radius <= 10) return; // avoid overlap
+
+        const total = courseTasks.length;
+        const completed = courseTasks.filter(t => t.completed).length;
+        const percent = total === 0 ? 0 : completed / total;
+
+        // Background ring
+        svg.appendChild(makeCircle({
+            r: radius,
+            stroke: "#eee"
+        }));
+
+        // Progress ring
+        svg.appendChild(makeCircle({
+            r: radius,
+            stroke: colorForCourse(course),
+            percent
+        }));
+
+        radius -= thickness + gap;
+    });
+}
+
+function makeCircle({ r, stroke, percent = 1 }) {
+    const circle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+    );
+
+    circle.setAttribute("cx", 70);
+    circle.setAttribute("cy", 70);
+    circle.setAttribute("r", r);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", stroke);
+    circle.setAttribute("stroke-width", 8);
+    circle.style.transform = "rotate(-90deg)";
+    circle.style.transformOrigin = "50% 50%";
+
+    if (percent < 1) {
+        const circumference = 2 * Math.PI * r;
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset =
+            circumference * (1 - percent);
     }
 
-    // Initialize the page
-    loadTodoState();
-    setInterval(checkMidnight, 60000); // Check the clock every minute
+    return circle;
+}
+
+function colorForCourse(course) {
+    const colors = [
+        "#4a90e2",
+        "#50e3c2",
+        "#f5a623",
+        "#bd10e0",
+        "#7ed321"
+    ];
+
+    let hash = 0;
+    for (let char of course) {
+        hash = (hash + char.charCodeAt(0)) % colors.length;
+    }
+
+    return colors[hash];
+}
+
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
+    buildProgressRings([...courseTasks]);           
 });
+
+function groupByCourse(tasks) {
+    return tasks.reduce((acc, task) => {
+        acc[task.course] ??=[];
+        acc[task.course].push(task);
+        return acc;
+    }, {});
+}
