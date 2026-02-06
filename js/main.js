@@ -1,3 +1,17 @@
+const title = document.querySelector("h1");
+title.textContent = "You have 10 tasks";
+
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
+
+    const all = [...dashboardTasks, ...courseTasks];
+    const clean = removeDuplicates(all);
+
+    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+
+    buildProgressRings(tasksOnly);
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // 1. Class Tag Redirects
@@ -57,8 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Run the check every 60 seconds
   setInterval(checkMidnight, 60000);
 });
+
 function buildProgressRings(tasks) {
-    const title = document.getElementById("title");
+    const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
@@ -136,9 +151,7 @@ function colorForCourse(course) {
     return colors[hash];
 }
 
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    buildProgressRings([...courseTasks]);           
-});
+
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
@@ -146,4 +159,16 @@ function groupByCourse(tasks) {
         acc[task.course].push(task);
         return acc;
     }, {});
+}
+
+
+// Remove duplicate tasks based on URL
+function removeDuplicates(tasks) {
+    const seen = new Set();
+    return tasks.filter(task => {
+        if (!task.url) return false; // Skip tasks without a URL
+        if (seen.has(task.url)) return false;
+        seen.add(task.url);
+        return true;
+    });
 }
