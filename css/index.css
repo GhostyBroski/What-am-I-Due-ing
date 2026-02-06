@@ -140,10 +140,10 @@ main > div:last-child {
     transition: all 0.3s ease;
 }
 
-.todo-item > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+.todo-item h1,
+.todo-item h2,
+.todo-item p {
+    display: block;
 }
 
 .todo-item h1 {
@@ -163,85 +163,16 @@ main > div:last-child {
     color: #777;
 }
 
-/* ======================
-   COMPLETED STATE
-====================== */
-.todo-item.completed h2 {
-    text-decoration: line-through;
-    color: #999;
+.todo-item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
 }
 
-.todo-item.completed h1 {
-    color: #999;
+.todo-item h1,
+.todo-item h2,
+.todo-item p {
+    grid-column: 2;
 }
 
-.todo-item.completed {
-    opacity: 0.6;
-    background-color: #fafafa;
-}
 
-/* ======================
-   Assignment Button (Circle)
-====================== */
-.myButton {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid #ccc;
-    background-color: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 0.25rem;
-    position: relative;
-}
-
-.myButton:hover {
-    border-color: #4a90e2;
-    transform: scale(1.1);
-}
-
-.myButton.active {
-    background-color: #4a90e2;
-    border-color: #4a90e2;
-}
-
-.myButton.active::after {
-    content: "✓";
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* ======================
-   Late Assignment Indicator
-====================== */
-.todo-item.late {
-    border-left: 4px solid #e74c3c;
-}
-
-.todo-item.late h2 {
-    color: #e74c3c;
-}
-
-/* ======================
-   Settings & Filter Buttons
-====================== */
-.settings-button,
-.filter-button {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-.settings-button:hover,
-.filter-button:hover {
-    background-color: #f0f0f0;
-}

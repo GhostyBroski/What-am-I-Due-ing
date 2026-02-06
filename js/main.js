@@ -2,39 +2,39 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTodoButtons();
     scheduleMidnightCleanup();
 });
-function setupTodoButtons() {
-    const buttons = document.querySelectorAll(".myButton");
 
-    buttons.forEach(button => {
+function setupTodoButtons() {
+    document.querySelectorAll(".myButton").forEach(button => {
         button.addEventListener("click", () => {
             const todoItem = button.closest(".todo-item");
+            if (!todoItem) return;
 
-            // Toggle completed state
             todoItem.classList.toggle("completed");
             button.classList.toggle("active");
         });
     });
 }
+
 function scheduleMidnightCleanup() {
     const now = new Date();
     const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);
 
-    midnight.setHours(24, 0, 0, 0); // Next midnight
-
-    const timeUntilMidnight = midnight - now;
+    const delay = midnight - now;
 
     setTimeout(() => {
         removeCompletedTodos();
-        scheduleMidnightCleanup(); // Run again tomorrow
-    }, timeUntilMidnight);
+        scheduleMidnightCleanup();
+    }, delay);
 }
-function removeCompletedTodos() {
-    const completedTodos = document.querySelectorAll(".todo-item.completed");
 
-    completedTodos.forEach(todo => {
-        todo.remove();
-    });
+function removeCompletedTodos() {
+    document
+        .querySelectorAll(".todo-item.completed")
+        .forEach(todo => todo.remove());
 }
+
+
 
 
 
