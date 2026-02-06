@@ -141,7 +141,6 @@ main > div:last-child {
 .todo-item button {
     border-color: #eee
     ;
-    cursor: pointer;
 }
 
 /* Course code */
@@ -151,28 +150,43 @@ main > div:last-child {
     color: #444;
 }
 
-/* When a todo-item is completed, strike through all text inside it */
+/* Assignment title */
+.todo-item h2 {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Due date info */
+
+/* This targets the text specifically when the parent has the class */
+/* Target h1, h2, and p ONLY when the parent has the .completed class */
 .todo-item.completed h1, 
 .todo-item.completed h2, 
 .todo-item.completed p {
-    text-decoration: line-through;
-    opacity: 0.5;
-}
-
-/* Optional: change the button color when clicked */
-.todo-item.completed button {
-    background-color: #4CAF50;
-}
-/* Add this to your CSS file */
-.completed {
-    text-decoration: line-through;
-    color: #aaa !important;
+    text-decoration: line-through !important;
+    color: #999 !important;
     opacity: 0.6;
-    transition: all 0.3s ease;
 }
 
-/* Optional: change the button color when clicked */
-.todo-item button.active {
-    background-color: #fd3232; 
-    border-color: #000000;
+/* Smooth animation */
+.todo-item h1,
+.todo-item h2,
+.todo-item p {
+    transition: all 0.2s ease;
+}
+
+/* Red button when active */
+.myButton.active {
+    background-color: #fd3232;
+    border-color: #000;
+    position: relative;
+}
+
+.myButton.active::after {
+    content: "✓";
+    color: white;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
