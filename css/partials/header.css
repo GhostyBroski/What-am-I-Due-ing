@@ -19,10 +19,20 @@ header {
 }
 .settings-button {
     border-radius: 50px;
-    width: 10px;
-    height: 10px;
+    width: 30px;
+    height: 30px;
     align-self: center;
     justify-self: center;
+    border: none;
+    grid-area: 1 / 3 / 2 / 4;
+    background-color: white;
+    z-index: 1;
+}
+#settings-img {
+    justify-self: center;
+    align-self: center;
+    width: 30px;
+    grid-area: 1 / 3 / 2 / 4;
 }
 
 /* Assignments Heading */
