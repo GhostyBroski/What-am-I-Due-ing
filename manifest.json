@@ -2,17 +2,22 @@
   "manifest_version": 3,
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
-  "permissions": ["storage", "alarms"],
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
   "action": {
     "default_popup": "index.html"
   },
-  "background": {
-    "service_worker": "js/main.js"
-  },
   "content_scripts": [
     {
-      "matches": ["https://byui.instructure.com/*"],
-      "js": ["js/content.js"]
+      "matches": [
+        "https://byui.instructure.com/*"
+      ],
+      "js": [
+        "js/content.js"
+      ],
+      "run_at": "document_idle"
     }
   ]
 }

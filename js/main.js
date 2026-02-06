@@ -1,73 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Setup Assignment Buttons
+    setupTodoButtons();
+    scheduleMidnightCleanup();
+});
+function setupTodoButtons() {
     const buttons = document.querySelectorAll(".myButton");
 
-    buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const parent = btn.closest(".todo-item");
-            if (parent) {
-                parent.classList.toggle("completed");
-                btn.classList.toggle("active");
-                
-                // Save state to storage so it persists
-                const taskId = parent.querySelector('h2')?.innerText;
-                if (taskId) {
-                    chrome.storage.local.set({ [taskId]: parent.classList.contains("completed") });
-                }
-            }
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            const todoItem = button.closest(".todo-item");
+
+            // Toggle completed state
+            todoItem.classList.toggle("completed");
+            button.classList.toggle("active");
         });
     });
-
-    // 2. Class Tag Redirects
-    const classTags = document.querySelectorAll(".class-tag");
-    const classLinks = [
-        "https://byui.instructure.com/courses/310",
-        "https://byui.instructure.com/courses/212"
-    ];
-
-    classTags.forEach((tag, index) => {
-        tag.addEventListener("click", () => {
-            const url = classLinks[index] || "https://byui.instructure.com/";
-            window.open(url, "_blank");
-        });
-    });
-
-    classTags.forEach((tag, index) => {
-        tag.addEventListener("click", () => {
-            const url = classLinks[index] || "https://byui.instructure.com/";
-            window.open(url, "_blank");
-        });
-    });
-});
-  // 3. The Midnight Checker (Moved inside so it can access todoItems)
-  function checkMidnight() {
+}
+function scheduleMidnightCleanup() {
     const now = new Date();
-    
-    // Check if it's 00:00 (Midnight)
-    if (now.getHours() === 0 && now.getMinutes() === 0) {
-        console.log("Midnight cleanup triggered...");
-        
-        todoItems.forEach(item => {
-            // Check if the h1 inside this item has the 'completed' class
-            const title = item.querySelector("h1");
-            if (title && title.classList.contains("completed")) {
-                
-                // Visual Fade Out
-                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-                item.style.opacity = "0";
-                item.style.transform = "translateX(20px)";
-                
-                setTimeout(() => {
-                    item.remove();
-                }, 500);
-            }
-        });
-    }
-  }
+    const midnight = new Date();
 
-  // Run the check every 60 seconds
-  setInterval(checkMidnight, 60000);
-});
+    midnight.setHours(24, 0, 0, 0); // Next midnight
+
+    const timeUntilMidnight = midnight - now;
+
+    setTimeout(() => {
+        removeCompletedTodos();
+        scheduleMidnightCleanup(); // Run again tomorrow
+    }, timeUntilMidnight);
+}
+function removeCompletedTodos() {
+    const completedTodos = document.querySelectorAll(".todo-item.completed");
+
+    completedTodos.forEach(todo => {
+        todo.remove();
+    });
+}
+
+
+
+
 function buildProgressRings(tasks) {
     const title = document.getElementById("title");
     title.textContent = `You have ${tasks.length} tasks`;
