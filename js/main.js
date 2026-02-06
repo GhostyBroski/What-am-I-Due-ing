@@ -1,3 +1,16 @@
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
+    buildProgressRings([...courseTasks]);           
+});
+
+function groupByCourse(tasks) {
+    return tasks.reduce((acc, task) => {
+        acc[task.course] ??=[];
+        acc[task.course].push(task);
+        return acc;
+    }, {});
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
     setupTodoButtons();
     scheduleMidnightCleanup();
@@ -118,14 +131,3 @@ function colorForCourse(course) {
     return colors[hash];
 }
 
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks, courseTasks}) => {
-    buildProgressRings([...courseTasks]);           
-});
-
-function groupByCourse(tasks) {
-    return tasks.reduce((acc, task) => {
-        acc[task.course] ??=[];
-        acc[task.course].push(task);
-        return acc;
-    }, {});
-}
