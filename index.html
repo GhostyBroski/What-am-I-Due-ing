@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>What Am I Due-ing</title>
-        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="css/styles.css">
         <script src="js/main.js" defer></script>
     </head>
     <body>
@@ -12,6 +12,7 @@
             <img id="logo" src="/images/android-chrome-192x192.png" alt="What am I Due-ing logo">
             <h1 id="title">To-Due</h1>
             <button class="settings-button"></button>
+            <img id="settings-img" src="/images/settings_gear.webp" alt="Settings Button">
         </header>
         <main>
         <!-- Class List -->
@@ -41,6 +42,7 @@
                     <!-- <p>- [Class Name]</p> -->
                 </section>
             </div>
+            
         <!-- Progress Circles -->
             <div class="circle-progress-display">
                 <h1 id="ring-title"></h1>
@@ -53,12 +55,14 @@
                 <p>1 Week</p> <!-- Assignment filter indicator -->
                 <button class="filter-button"></button>
             </div>
+
+            
         <!-- Assignment List -->
             <div>
                 <section class="todo-item">
                     <button class="myButton"></button>
                     <h1>CSE 310</h1>
-                    <h2>W01-Prepare:Semester Planning</h2>
+                    <h2>W01-Prepare: Semester Planning</h2>
                     <p>Due Jan 10 at 11:59 PM | 50 points</p>
                 </section>
                 <section class="todo-item">
@@ -68,7 +72,7 @@
                     <p>Due [Date] at [Time] | [Point Amount] points</p>
                 </section>
                 <section class="todo-item late">
-                    <button id="myButton"></button>
+                    <button class="myButton"></button>
                     <h1>[Course Code]</h1>
                     <h2>[Assignment Name]</h2>
                     <p>Due [Date] at [Time] | [Point Amount] points</p>
