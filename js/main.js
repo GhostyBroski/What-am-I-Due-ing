@@ -15,6 +15,7 @@ function setupTodoButtons() {
     });
 }
 
+
 function scheduleMidnightCleanup() {
     const now = new Date();
     const midnight = new Date();
@@ -33,9 +34,12 @@ function removeCompletedTodos() {
         .querySelectorAll(".todo-item.completed")
         .forEach(todo => todo.remove());
 }
-
-
-
+document.querySelectorAll('.class-tag').forEach(element => {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'course-tooltip';
+    tooltip.textContent = element.dataset.fullname;
+    element.appendChild(tooltip);  // Changed from 'course-tooltip' to 'tooltip'
+});
 
 
 

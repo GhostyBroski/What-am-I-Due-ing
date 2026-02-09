@@ -28,7 +28,43 @@
     background-color: #eee;
     transform: translateY(-1px);
 }
+/* Hover to show full class name */
+.class-tag .course-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 10000;
+    transition: opacity 0.3s ease;
+    font-size: 13px;
+    font-weight: 500;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.class-tag .course-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+}
 
+.class-tag:hover .course-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
 .class-tag h1 {
     font-size: 0.9rem;
     font-weight: 600;
@@ -105,4 +141,5 @@
     opacity: 0.6;
     background-color: #fafafa;
 }
+
 
