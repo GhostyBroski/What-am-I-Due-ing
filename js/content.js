@@ -1,5 +1,9 @@
 console.log("CONTENT SCRIPT 2222 RUNNING on", location.href);
 
+// const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+// const announcements = clean.filter(task => task.url.includes("discussion_topics"));
+
+
 function collectDashboardTasks() {
     // Convert a nodeList to an array (...) and map to task objects
     const items = [...document.querySelectorAll("#planner-todosidebar-item-list li")];
@@ -26,6 +30,8 @@ function collectDashboardTasks() {
 
     // Store tasks in browser storage
     browser.storage.sync.set({ dashboardTasks: tasks });
+    // Store tasks in chrome storage
+    chrome.storage.sync.set({ dashboardTasks: removeDuplicates(tasks) });
     console.log("Dashboard tasks:", tasks);
 }
 
@@ -81,12 +87,23 @@ function collectCourseTasks() {
             const previous = data.courseTasks || [];
             const updated = [...previous, ...tasks];
             browser.storage.sync.set({ courseTasks: updated });
+            const updated = removeDuplicates([...previous, ...tasks]);
+            chrome.storage.sync.set({ courseTasks: updated });
         });
 
     console.log("Course tasks:", tasks);
 }
 
-// Determine which function to call based on the current URL path
+function removeDuplicates(tasks) {
+    const seen = new Set();
+    return tasks.filter(task => {
+        if (!task.url) return false; // Skip tasks without a URL
+        if (seen.has(task.url)) return false;
+        seen.add(task.url);
+        return true;
+    });
+}
+
 if (location.pathname === "/") {
     collectDashboardTasks();
 }
