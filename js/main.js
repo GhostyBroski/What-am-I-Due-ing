@@ -1,5 +1,3 @@
-const title = document.querySelector("h1");
-title.textContent = "You have 10 tasks";
 
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
