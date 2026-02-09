@@ -28,8 +28,6 @@ function collectDashboardTasks() {
         };
     }).filter(task => task.title && task.url); // Filter out tasks without a title
 
-    // Store tasks in browser storage
-    browser.storage.sync.set({ dashboardTasks: tasks });
     // Store tasks in chrome storage
     chrome.storage.sync.set({ dashboardTasks: removeDuplicates(tasks) });
     console.log("Dashboard tasks:", tasks);
@@ -83,10 +81,8 @@ function collectCourseTasks() {
             .filter(task => task.title && task.url); // limpiar vacíos
 
         // Append to existing courseTasks
-        browser.storage.sync.get(["courseTasks"], data => {
+        chrome.storage.sync.get(["courseTasks"], data => {
             const previous = data.courseTasks || [];
-            const updated = [...previous, ...tasks];
-            browser.storage.sync.set({ courseTasks: updated });
             const updated = removeDuplicates([...previous, ...tasks]);
             chrome.storage.sync.set({ courseTasks: updated });
         });
