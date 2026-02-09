@@ -3,21 +3,35 @@ let selectedCourseCode = null;
 
 function initPopup() {
     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], (data) => {
+        console.log("Data received from local storage:", data); // Check your console!
+
         const dash = data.dashboardTasks || [];
         const course = data.courseTasks || [];
         
-        // Merge and de-duplicate by URL
         const combined = [...dash, ...course];
         const uniqueMap = new Map();
+        
         combined.forEach(item => {
             if (item.url) uniqueMap.set(item.url, item);
         });
         
-        globalTasks = Array.from(uniqueMap.values());
+        // 2. Filter out assignments from the past (Jan 23 issue)
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); 
+
+        globalTasks = Array.from(uniqueMap.values()).filter(task => {
+            const due = new Date(task.dueDate);
+            // Keep it if it's due today, in the future, or has no date
+            return isNaN(due.getTime()) || due >= now;
+        });
+
         renderUI();
     });
 }
 
+/**
+ * Requirement 4 & 7: Clean Spacing & Name Formatting
+ */
 function formatCourseDisplay(courseString) {
     if (!courseString) return "Unknown";
     const clean = courseString.replace(/\s+/g, ' ').trim();
@@ -26,27 +40,25 @@ function formatCourseDisplay(courseString) {
 }
 
 function getCourseCode(courseString) {
-    const cleanName = formatCourseDisplay(courseString);
-    if (cleanName === "Unknown") return "??";
-    if (cleanName.toLowerCase().includes("rixstix")) return "DRUM";
-
-    const match = cleanName.match(/([A-Z]{2,4})\s*(\d{3,4})/i);
-    if (match) return `${match[1].toUpperCase()} ${match[2]}`;
-
-    return cleanName.split(' ')[0].toUpperCase();
+    if (!courseString) return "???";
+    
+    // Pattern: 2-4 letters, optional space, 3 digits (e.g., CSE 231, CS201)
+    const match = courseString.match(/[A-Z]{2,4}\s?\d{3,4}/i);
+    return match ? match[0].toUpperCase() : courseString.split(' ')[0].substring(0, 7).toUpperCase();
 }
 
+/**
+ * Requirement 6: Date Logic for Overdue vs Upcoming
+ */
 function parseDate(dateStr) {
     if (!dateStr) return new Date(8640000000000000); 
     let cleaned = dateStr.replace(/Due:/i, "").replace(/at/i, "").trim();
-    // Simple check to add year if missing
     if (!cleaned.includes("202")) cleaned += ` ${new Date().getFullYear()}`;
-    const d = new Date(cleaned);
-    return isNaN(d) ? new Date(8640000000000000) : d;
+    return new Date(cleaned);
 }
 
 function renderUI() {
-    // UPDATED: Match the <div> after #assignments-heading in your index.html
+    // Target the specific containers from your index.html
     const todoContainer = document.querySelector("#assignments-heading + div");
     const classContainer = document.querySelector(".class-list");
     
@@ -55,24 +67,26 @@ function renderUI() {
     todoContainer.innerHTML = "";
     classContainer.innerHTML = "";
 
-    // Generate Course Filter Tags
+    // 1. Render Course Tags (Filter Buttons)
     const allCourses = [...new Set(globalTasks.map(t => formatCourseDisplay(t.course)))];
     
     allCourses.forEach(courseName => {
-        if (courseName === "Unknown") return;
+        if (courseName === "Unknown") return; 
         
-        const btn = document.createElement("section");
-        btn.className = `class-tag ${selectedCourseCode === courseName ? "active-tag" : ""}`;
-        btn.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
-        btn.title = courseName;
-        btn.onclick = () => {
+        const section = document.createElement("section");
+        section.className = "class-tag";
+        if (selectedCourseCode === courseName) section.classList.add("active-tag"); // Optional CSS class
+
+        section.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
+        
+        section.onclick = () => {
             selectedCourseCode = (selectedCourseCode === courseName) ? null : courseName;
             renderUI();
         };
-        classContainer.appendChild(btn);
+        classContainer.appendChild(section);
     });
 
-    // Filtering and Sorting
+    // 2. Filter and Sort Tasks
     let tasksToDisplay = selectedCourseCode 
         ? globalTasks.filter(t => formatCourseDisplay(t.course) === selectedCourseCode)
         : globalTasks;
@@ -87,50 +101,46 @@ function renderUI() {
         else upcoming.push(task);
     });
 
-    // Sort by date
-    const sortByDate = (a, b) => parseDate(a.dueDate) - parseDate(b.dueDate);
-    overdue.sort(sortByDate);
-    upcoming.sort(sortByDate);
-
+    // 3. Render Sections
     renderSection(todoContainer, "Overdue", overdue, true);
     renderSection(todoContainer, "Upcoming", upcoming, false);
 }
 
-function renderSection(container, title, tasks, isOverdue) {
+function renderSection(container, title, tasks, isLate) {
     if (tasks.length === 0) return;
     
-    const header = document.createElement("h3");
-    header.className = "section-title";
-    header.style.margin = "10px 0"; // Basic styling for visibility
-    header.innerText = title;
-    container.appendChild(header);
+    // Add a section title for clarity
+    const sectionHeader = document.createElement("h3");
+    sectionHeader.className = "section-header"; 
+    sectionHeader.innerText = title;
+    container.appendChild(sectionHeader);
 
     tasks.forEach(task => {
         const item = document.createElement("section");
-        item.className = `todo-item ${isOverdue ? 'late' : ''}`;
-        
-        const cleanCourse = formatCourseDisplay(task.course);
-        const code = getCourseCode(cleanCourse);
+        // Using your exact classes: 'todo-item' and 'late'
+        item.className = `todo-item ${isLate ? "late" : ""}`;
+
+        const code = getCourseCode(task.course);
 
         item.innerHTML = `
             <button class="myButton"></button>
-            <div class="task-content" style="cursor: pointer; flex-grow: 1;">
-                <h1>${code}</h1>
-                <h2>${task.title}</h2>
-                <p>${task.dueDate || "No Due Date"}</p>
-            </div>
+            <h1>${code}</h1>
+            <h2>${task.title}</h2>
+            <p>${task.dueDate || "No Due Date"}</p>
         `;
 
-        // Handle Mark as Complete
+        // Logic for the button (Matches your main.js behavior)
         const btn = item.querySelector(".myButton");
-        btn.onclick = (e) => {
+        btn.addEventListener("click", (e) => {
             e.stopPropagation();
             item.classList.toggle("completed");
             btn.classList.toggle("active");
-        };
+        });
 
-        // Handle Link Opening
-        item.querySelector(".task-content").onclick = () => window.open(task.url, '_blank');
+        // Click anywhere else on the task to open Canvas
+        item.addEventListener("click", () => {
+            if (task.url) window.open(task.url, "_blank");
+        });
 
         container.appendChild(item);
     });
