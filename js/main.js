@@ -1,6 +1,9 @@
 const title = document.querySelector("h1");
 title.textContent = "You have 10 tasks";
 
+
+
+
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
     const all = [...dashboardTasks, ...courseTasks];
@@ -172,3 +175,60 @@ function removeDuplicates(tasks) {
         return true;
     });
 }
+
+
+// Section for assigment headings and buttons
+// Map the url path and store an icon and heading for each section
+const headings = {
+    "assignments": {
+        "heading": "Assignments",
+        "icon": "📝"
+    },
+    "announcements": {
+        "heading": "Announcements",
+        "icon": "📢"
+    },
+    "calendar": {
+        "heading": "Calendar",
+        "icon": "📅"
+    }
+}
+
+const titleEl = document.querySelector(".assign-title");
+const weekEl = document.querySelector(".assign-week");
+const leftBar = document.querySelector(".left-assign");
+const rightBar = document.querySelector(".right-assign");
+
+let order = ["assignments", "announcements", "calendar"];
+let center = 0; //central heading index
+
+function render_headings(){
+    const centerKey = order[center]
+    const rightKey = order[(center + 1) % 3];
+    const leftKey = order[(center + 2) % 3];
+
+    const base = headings[centerKey];
+    titleEl.textContent = `${base.heading}`;
+
+    // Right
+    rightBar.textContent = headings[rightKey].icon;
+
+    // Left
+    leftBar.textContent = headings[leftKey].icon;
+}
+
+// if the right heading is clicked, the center becomes the right and the order shifts to the left with the module 3 operator to wrap around
+rightBar.addEventListener("click", () => {
+    center = (center + 1) % 3;
+    render_headings();
+});
+
+// if the left heading is clicked, the center becomes the left and the order shifts to the right with the module 3 operator to wrap around
+leftBar.addEventListener("click", () => {
+    center = (center + 2) % 3; // equivalente a -1 mod 3
+    render_headings();
+});
+
+render_headings();
+
+

@@ -107,5 +107,3 @@ if (location.pathname === "/") {
 if (location.pathname.includes("/courses/")) {
     collectCourseTasks();
 }
-
-
