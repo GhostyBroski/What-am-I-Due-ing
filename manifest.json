@@ -2,33 +2,26 @@
   "manifest_version": 3,
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
-  "description": "A to-do and class tracker Chrome extension.",
-
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting"
+    "alarms"
   ],
-
   "action": {
     "default_popup": "index.html"
   },
-
-  "background": {
-    "service_worker": "js/main.js"
-  },
-
   "content_scripts": [
-    {
-      "matches": ["https://byui.instructure.com/"],
-      "js": ["content.js"]
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["js/main.js"],
-      "run_at": "document_idle"
-    }
-  ]
+  {
+    "matches": ["*://*.instructure.com/*"],
+    "js": ["js/content.js"],
+    "run_at": "document_idle"
+  },
+  {
+    "matches": ["<all_urls>"],
+    "js": ["js/main.js"],
+    "run_at": "document_idle"
+  }
+]
+
 }
 
   
