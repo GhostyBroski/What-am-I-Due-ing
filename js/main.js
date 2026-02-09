@@ -1,4 +1,3 @@
-
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
     const all = [...dashboardTasks, ...courseTasks];
