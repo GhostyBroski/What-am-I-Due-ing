@@ -1,4 +1,12 @@
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
+    const all = [...dashboardTasks, ...courseTasks];
+    const clean = removeDuplicates(all);
+
+    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+
+    buildProgressRings(tasksOnly);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 
