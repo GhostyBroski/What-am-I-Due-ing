@@ -1,14 +1,20 @@
-
-
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
-    const classTags = document.querySelectorAll(".class-tag");
-    const classLinks = [
-      "https://byui.instructure.com/courses/310",
-      "https://byui.instructure.com/courses/212",
-      "https://byui.instructure.com/courses/999"
-    ];
+    // const classTags = document.querySelectorAll(".class-tag");
+    // const classLinks = [
+    //   "https://byui.instructure.com/courses/310",
+    //   "https://byui.instructure.com/courses/212",
+    //   "https://byui.instructure.com/courses/999"
+    // ];
+    chrome.storage.sync.get(["courseTasks"], (data) => {
+        const tasks = data.courseTasks || [];
+    
+        tasks.forEach(task => {
+            console.log("URL from content.js:", task.url);
+        });
+    });
+    
   
     classTags.forEach((tag, index) => {
       tag.addEventListener("click", () => {
@@ -35,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".class-tag").forEach(tag => {
         if (tag.querySelector(".course-tooltip")) return;
   
-        const fullName = tag.getAttribute("data-full-name");
+        const fullName = tag.dataset.fullName;
         if (!fullName) return;
   
         const tooltip = document.createElement("div");
