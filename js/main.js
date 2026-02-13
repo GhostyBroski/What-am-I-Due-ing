@@ -1,62 +1,54 @@
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
-
-//     const all = [...dashboardTasks, ...courseTasks];
-//     const clean = removeDuplicates(all);
-
-//     const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
-
-//     buildProgressRings(tasksOnly);
-// });
 
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 1. Class Tag Redirects
-  const classTags = document.querySelectorAll(".class-tag");
-  const classLinks = [
-    "https://byui.instructure.com/courses/310",
-    "https://byui.instructure.com/courses/212",
-    "https://byui.instructure.com/courses/999" // Fallback link
-  ];
-
-  classTags.forEach((tag, index) => {
-    tag.addEventListener("click", () => {
-      // Use index to pick link, default to Canvas home if out of bounds
-      const url = classLinks[index] || "https://byui.instructure.com/";
-      window.open(url, "_blank");
+    // Class Tag Redirects
+    const classTags = document.querySelectorAll(".class-tag");
+    const classLinks = [
+      "https://byui.instructure.com/courses/310",
+      "https://byui.instructure.com/courses/212",
+      "https://byui.instructure.com/courses/999"
+    ];
+  
+    classTags.forEach((tag, index) => {
+      tag.addEventListener("click", () => {
+        const url = classLinks[index] || "https://byui.instructure.com/";
+        window.open(url, "_blank");
+      });
     });
-  });
-//   Complete Button line-through
-
-  document.querySelectorAll(".todo-item").forEach(item => {
-    const button = item.querySelector(".myButton");
-    if (!button) return;
-
-    button.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      item.classList.toggle("completed");
-    //   button.classList.toggle("active");
+  
+    // Complete Button
+    document.querySelectorAll(".todo-item").forEach(item => {
+      const button = item.querySelector(".myButton");
+      if (!button) return;
+  
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        item.classList.toggle("completed");
+      });
     });
-  });
-//   Tag full name display
-function fullNamehover() {
-    document.querySelectorAll(".class-tag").forEach(tag => {
-        // Check if tooltip already exists to prevent duplicates
+  
+    // Create tooltips
+    fullNamehover();   // ← ADD THIS LINE
+  
+    function fullNamehover() {
+      document.querySelectorAll(".class-tag").forEach(tag => {
         if (tag.querySelector(".course-tooltip")) return;
-
+  
         const fullName = tag.getAttribute("data-full-name");
         if (!fullName) return;
-
-        // Create the tooltip element
+  
         const tooltip = document.createElement("div");
         tooltip.className = "course-tooltip";
         tooltip.textContent = fullName;
-
-        // Append it INSIDE the tag so the CSS 'bottom: 125%' works
+  
         tag.appendChild(tooltip);
-    });
-}
+      });
+    }
+  
+  });
+  
+
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
@@ -85,7 +77,7 @@ function fullNamehover() {
 
   // Run the check every 60 seconds
   setInterval(checkMidnight, 60000);
-});
+
 
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
