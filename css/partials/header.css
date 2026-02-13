@@ -26,7 +26,6 @@ header {
     border: none;
     grid-area: 1 / 3 / 2 / 4;
     background-color: white;
-    z-index: 1;
 }
 #settings-img {
     justify-self: center;
