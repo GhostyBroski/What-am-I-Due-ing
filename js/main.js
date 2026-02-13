@@ -1,15 +1,15 @@
-const title = document.querySelector("h1");
-title.textContent = "You have 10 tasks";
+// const title = document.querySelector("h1");
+// title.textContent = "You have 10 tasks";
 
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
+// chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
-    const all = [...dashboardTasks, ...courseTasks];
-    const clean = removeDuplicates(all);
+//     const all = [...dashboardTasks, ...courseTasks];
+//     const clean = removeDuplicates(all);
 
-    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+//     const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
 
-    buildProgressRings(tasksOnly);
-});
+//     buildProgressRings(tasksOnly);
+// });
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -39,24 +39,27 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
 
       item.classList.toggle("completed");
-      button.classList.toggle("active");
+    //   button.classList.toggle("active");
     });
   });
 //   Tag full name display
-//   allCourses.forEach(courseName => {
-//     if (courseName === "Unknown") return;
-    
-//     const btn = document.createElement("section");
-//     btn.className = `class-tag ${selectedCourseCode === courseName ? "active-tag" : ""}`;
-//     btn.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
-//     btn.title = courseName;
-//     btn.onclick = () => {
-//         selectedCourseCode = (selectedCourseCode === courseName) ? null : courseName;
-//         renderUI();
-//     };
-//     classContainer.appendChild(btn);
-// });
-  
+function fullNamehover() {
+    document.querySelectorAll(".class-tag").forEach(tag => {
+        // Check if tooltip already exists to prevent duplicates
+        if (tag.querySelector(".course-tooltip")) return;
+
+        const fullName = tag.getAttribute("data-full-name");
+        if (!fullName) return;
+
+        // Create the tooltip element
+        const tooltip = document.createElement("div");
+        tooltip.className = "course-tooltip";
+        tooltip.textContent = fullName;
+
+        // Append it INSIDE the tag so the CSS 'bottom: 125%' works
+        tag.appendChild(tooltip);
+    });
+}
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
