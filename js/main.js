@@ -1,6 +1,3 @@
-const title = document.querySelector("h1");
-title.textContent = "You have 10 tasks";
-
 chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
     const all = [...dashboardTasks, ...courseTasks];
@@ -11,52 +8,55 @@ chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = []
     buildProgressRings(tasksOnly);
 });
 
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 1. Class Tag Redirects
-  const classTags = document.querySelectorAll(".class-tag");
-  const classLinks = [
-    "https://byui.instructure.com/courses/310",
-    "https://byui.instructure.com/courses/212",
-    "https://byui.instructure.com/courses/999" // Fallback link
-  ];
-
-  classTags.forEach((tag, index) => {
-    tag.addEventListener("click", () => {
-      // Use index to pick link, default to Canvas home if out of bounds
-      const url = classLinks[index] || "https://byui.instructure.com/";
-      window.open(url, "_blank");
-    });
-  });
-//   Complete Button line-through
-
-  document.querySelectorAll(".todo-item").forEach(item => {
-    const button = item.querySelector(".myButton");
-    if (!button) return;
-
-    button.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      item.classList.toggle("completed");
-      button.classList.toggle("active");
-    });
-  });
-//   Tag full name display
-//   allCourses.forEach(courseName => {
-//     if (courseName === "Unknown") return;
-    
-//     const btn = document.createElement("section");
-//     btn.className = `class-tag ${selectedCourseCode === courseName ? "active-tag" : ""}`;
-//     btn.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
-//     btn.title = courseName;
-//     btn.onclick = () => {
-//         selectedCourseCode = (selectedCourseCode === courseName) ? null : courseName;
-//         renderUI();
-//     };
-//     classContainer.appendChild(btn);
-// });
+    // Class Tag Redirects
+    const classTags = document.querySelectorAll(".class-tag");
+    const classLinks = [
+      "https://byui.instructure.com/courses/310",
+      "https://byui.instructure.com/courses/212",
+      "https://byui.instructure.com/courses/999"
+    ];
   
+    classTags.forEach((tag, index) => {
+      tag.addEventListener("click", () => {
+        const url = classLinks[index] || "https://byui.instructure.com/";
+        window.open(url, "_blank");
+      });
+    });
+  
+    // Complete Button
+    document.querySelectorAll(".todo-item").forEach(item => {
+      const button = item.querySelector(".myButton");
+      if (!button) return;
+  
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        item.classList.toggle("completed");
+      });
+    });
+  
+    // Create tooltips
+    fullNamehover();   // ← ADD THIS LINE
+  
+    function fullNamehover() {
+      document.querySelectorAll(".class-tag").forEach(tag => {
+        if (tag.querySelector(".course-tooltip")) return;
+  
+        const fullName = tag.getAttribute("data-full-name");
+        if (!fullName) return;
+  
+        const tooltip = document.createElement("div");
+        tooltip.className = "course-tooltip";
+        tooltip.textContent = fullName;
+  
+        tag.appendChild(tooltip);
+      });
+    }
+  
+  });
+  
+
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Run the check every 60 seconds
   setInterval(checkMidnight, 60000);
-});
+
 
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
@@ -241,5 +241,3 @@ leftBar.addEventListener("click", () => {
 });
 
 render_headings();
-
-

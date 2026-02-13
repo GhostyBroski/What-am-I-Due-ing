@@ -11,13 +11,12 @@
         <header>
             <img id="logo" src="/images/android-chrome-192x192.png" alt="What am I Due-ing logo">
             <h1 id="title">To-Due</h1>
-            <button class="settings-button"></button>
-            <img id="settings-img" src="/images/settings_gear.webp" alt="Settings Button">
+            <button class="settings-button"><img id="settings-img" src="/images/settings_gear.webp" alt="Settings Button"></button>
         </header>
         <main>
         <!-- Class List -->
             <div class="class-list">
-                <section class="class-tag">
+                <section class="class-tag" data-full-name="Programming with Data Structures">
                     <h1>CSE 310</h1>
                     <!-- <p>- Applied Programming</p> !!!Make Visible on hover!!! -->
                 </section>
@@ -49,15 +48,18 @@
             </div>
         <!-- Assignments Heading -->
             <div id="assignments-heading">
-                <button class="filter-button"></button>
-                <h1>Assignments</h1>
-                <p>1 Week</p> <!-- Assignment filter indicator -->
-                <button class="filter-button"></button>
+                <div class="left-assign"></div>
+                <div class="title-container">
+                    <h1 class="assign-title"></h1>
+                    <p class="assign-week">week 3</p> <!-- Assignment filter indicator -->
+                </div>
+                <div class="right-assign"></div>
             </div>
 
             
         <!-- Assignment List -->
             <div>
+                <!-- just to make sure the tag works -->
                 <section class="todo-item">
                     <button class="myButton"></button>
                     <h1>CSE 310</h1>
