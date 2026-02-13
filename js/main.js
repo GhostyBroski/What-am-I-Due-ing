@@ -233,5 +233,3 @@ leftBar.addEventListener("click", () => {
 });
 
 render_headings();
-
-});
