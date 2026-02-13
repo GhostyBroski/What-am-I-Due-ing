@@ -1,4 +1,12 @@
+chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
 
+    const all = [...dashboardTasks, ...courseTasks];
+    const clean = removeDuplicates(all);
+
+    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
+
+    buildProgressRings(tasksOnly);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -267,8 +275,4 @@ leftBar.addEventListener("click", () => {
 
 render_headings();
 
-buildProgressRings([
-  { course: "CSE 310", completed: true },
-  { course: "CSE 310", completed: false },
-  { course: "CSE 212", completed: true }
-]);
+});
