@@ -8,6 +8,7 @@ chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = []
     buildProgressRings(tasksOnly);
 });
 
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
@@ -59,6 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
         tooltip.textContent = fullName;
   
         tag.appendChild(tooltip);
+        chrome.storage.sync.get(["courseTasks"], (data) => {
+            const tasks = data.courseTasks || [];
+        
+            tasks.forEach(task => {
+                console.log("Course name from content.js:", task.course);
+            });
+        });
+        
       });
     }
   
@@ -95,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     render_headings();
 
 
-  });
+//   });
   
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
@@ -283,4 +292,4 @@ leftBar.addEventListener("click", () => {
 
 render_headings();
 
-});
+// });
