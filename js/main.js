@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tasks.forEach(task => {
             console.log("URL from content.js:", task.url);
         });
-    });
+    })});
     
   
     classTags.forEach((tag, index) => {
@@ -291,5 +291,5 @@ leftBar.addEventListener("click", () => {
 });
 
 render_headings();
-
+buildProgressRings(); // Initial empty rings
 // });
