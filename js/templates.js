@@ -1,6 +1,10 @@
 let globalTasks = [];
-let selectedCourseCode = null;
+let selectedCourseName = null;
 
+/**
+ * 1. Initialize and Sync
+ * Grabs data using the exact keys from content.js
+ */
 function initPopup() {
     chrome.storage.sync.get(["dashboardTasks", "courseTasks"], (data) => {
         const dash = data.dashboardTasks || [];
@@ -14,126 +18,108 @@ function initPopup() {
         });
         
         globalTasks = Array.from(uniqueMap.values());
+        console.log("Templates.js: Tasks loaded", globalTasks);
+        
         renderUI();
     });
 }
 
-function formatCourseDisplay(courseString) {
-    if (!courseString) return "Unknown";
-    const clean = courseString.replace(/\s+/g, ' ').trim();
-    if (clean.toLowerCase() === "unknown course" || clean === "") return "Unknown";
-    return clean;
-}
-
+/**
+ * 2. Course Code Extractor
+ * Formats "Programming with Data Structures" -> "PROG" or grabs "CSE 310"
+ */
 function getCourseCode(courseString) {
-    const cleanName = formatCourseDisplay(courseString);
-    if (cleanName === "Unknown") return "??";
-    if (cleanName.toLowerCase().includes("rixstix")) return "DRUM";
-
-    const match = cleanName.match(/([A-Z]{2,4})\s*(\d{3,4})/i);
-    if (match) return `${match[1].toUpperCase()} ${match[2]}`;
-
-    return cleanName.split(' ')[0].toUpperCase();
+    if (!courseString) return "???";
+    // Regex to find patterns like CSE 310
+    const match = courseString.match(/[A-Z]{2,4}\s?\d{3,4}/i);
+    if (match) return match[0].toUpperCase();
+    
+    // Fallback: take first 7 chars of the first word
+    return courseString.split(' ')[0].substring(0, 7).toUpperCase();
 }
 
-function parseDate(dateStr) {
-    if (!dateStr) return new Date(8640000000000000); 
-    let cleaned = dateStr.replace(/Due:/i, "").replace(/at/i, "").trim();
-    // Simple check to add year if missing
-    if (!cleaned.includes("202")) cleaned += ` ${new Date().getFullYear()}`;
-    const d = new Date(cleaned);
-    return isNaN(d) ? new Date(8640000000000000) : d;
-}
-
+/**
+ * 3. Main Render Function
+ */
 function renderUI() {
-    // UPDATED: Match the <div> after #assignments-heading in your index.html
-    const todoContainer = document.querySelector("#assignments-heading + div");
-    const classContainer = document.querySelector(".class-list");
+    // Select the Class List div
+    const classListContainer = document.querySelector(".class-list");
     
-    if (!todoContainer || !classContainer) return;
+    // Select the Assignment List div (the one without a class/id after #assignments-heading)
+    const assignmentListContainer = document.querySelector("#assignments-heading + div");
 
-    todoContainer.innerHTML = "";
-    classContainer.innerHTML = "";
+    if (!classListContainer || !assignmentListContainer) {
+        console.error("Templates.js: Could not find HTML containers.");
+        return;
+    }
 
-    // Generate Course Filter Tags
-    const allCourses = [...new Set(globalTasks.map(t => formatCourseDisplay(t.course)))];
-    
-    allCourses.forEach(courseName => {
-        if (courseName === "Unknown") return;
-        
-        const btn = document.createElement("section");
-        btn.className = `class-tag ${selectedCourseCode === courseName ? "active-tag" : ""}`;
-        btn.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
-        btn.title = courseName;
-        btn.onclick = () => {
-            selectedCourseCode = (selectedCourseCode === courseName) ? null : courseName;
+    // Clear the placeholders [Course], [Code], etc.
+    classListContainer.innerHTML = "";
+    assignmentListContainer.innerHTML = "";
+
+    // --- RENDER CLASS LIST ---
+    // Get unique course names exactly as they appear in the data
+    const uniqueCourses = [...new Set(globalTasks.map(t => t.course))];
+
+    uniqueCourses.forEach(courseName => {
+        if (courseName === "Unknown Course") return;
+
+        const tag = document.createElement("section");
+        tag.className = "class-tag";
+        tag.setAttribute("data-full-name", courseName); // For main.js tooltips
+
+        tag.innerHTML = `<h1>${getCourseCode(courseName)}</h1>`;
+
+        // Filter logic
+        tag.addEventListener("click", () => {
+            selectedCourseName = (selectedCourseName === courseName) ? null : courseName;
             renderUI();
-        };
-        classContainer.appendChild(btn);
+        });
+
+        classListContainer.appendChild(tag);
     });
 
-    // Filtering and Sorting
-    let tasksToDisplay = selectedCourseCode 
-        ? globalTasks.filter(t => formatCourseDisplay(t.course) === selectedCourseCode)
+    // --- RENDER ASSIGNMENT LIST ---
+    const tasksToDisplay = selectedCourseName 
+        ? globalTasks.filter(t => t.course === selectedCourseName)
         : globalTasks;
 
-    const now = new Date();
-    const overdue = [];
-    const upcoming = [];
-
     tasksToDisplay.forEach(task => {
-        const d = parseDate(task.dueDate);
-        if (d < now) overdue.push(task);
-        else upcoming.push(task);
-    });
-
-    // Sort by date
-    const sortByDate = (a, b) => parseDate(a.dueDate) - parseDate(b.dueDate);
-    overdue.sort(sortByDate);
-    upcoming.sort(sortByDate);
-
-    renderSection(todoContainer, "Overdue", overdue, true);
-    renderSection(todoContainer, "Upcoming", upcoming, false);
-}
-
-function renderSection(container, title, tasks, isOverdue) {
-    if (tasks.length === 0) return;
-    
-    const header = document.createElement("h3");
-    header.className = "section-title";
-    header.style.margin = "10px 0"; // Basic styling for visibility
-    header.innerText = title;
-    container.appendChild(header);
-
-    tasks.forEach(task => {
         const item = document.createElement("section");
-        item.className = `todo-item ${isOverdue ? 'late' : ''}`;
+        item.className = "todo-item";
         
-        const cleanCourse = formatCourseDisplay(task.course);
-        const code = getCourseCode(cleanCourse);
+        // Check for "Late" or "Missed" in the dueDate string from content.js
+        if (task.dueDate.toLowerCase().includes("late") || task.dueDate.toLowerCase().includes("missed")) {
+            item.classList.add("late");
+        }
 
+        // Template matches index.html structure exactly
         item.innerHTML = `
             <button class="myButton"></button>
-            <div class="task-content" style="cursor: pointer; flex-grow: 1;">
-                <h1>${code}</h1>
-                <h2>${task.title}</h2>
-                <p>${task.dueDate || "No Due Date"}</p>
-            </div>
+            <h1>${getCourseCode(task.course)}</h1>
+            <h2>${task.title}</h2>
+            <p>${task.dueDate || "No Due Date"}</p>
         `;
 
-        // Handle Mark as Complete
+        // Completion Toggle logic
         const btn = item.querySelector(".myButton");
-        btn.onclick = (e) => {
+        btn.addEventListener("click", (e) => {
             e.stopPropagation();
             item.classList.toggle("completed");
-            btn.classList.toggle("active");
-        };
+        });
 
-        // Handle Link Opening
-        item.querySelector(".task-content").onclick = () => window.open(task.url, '_blank');
+        // Open assignment link
+        item.addEventListener("click", () => {
+            if (task.url) window.open(task.url, "_blank");
+        });
 
-        container.appendChild(item);
+        assignmentListContainer.appendChild(item);
     });
+
+    // Re-run the tooltip initialization from main.js
+    if (typeof fullNamehover === "function") {
+        fullNamehover();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initPopup);

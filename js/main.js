@@ -8,15 +8,24 @@ chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = []
     buildProgressRings(tasksOnly);
 });
 
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
-    const classTags = document.querySelectorAll(".class-tag");
-    const classLinks = [
-      "https://byui.instructure.com/courses/310",
-      "https://byui.instructure.com/courses/212",
-      "https://byui.instructure.com/courses/999"
-    ];
+    // const classTags = document.querySelectorAll(".class-tag");
+    // const classLinks = [
+    //   "https://byui.instructure.com/courses/310",
+    //   "https://byui.instructure.com/courses/212",
+    //   "https://byui.instructure.com/courses/999"
+    // ];
+    chrome.storage.sync.get(["courseTasks"], (data) => {
+        const tasks = data.courseTasks || [];
+    
+        tasks.forEach(task => {
+            console.log("URL from content.js:", task.url);
+        });
+    })});
+    
   
     classTags.forEach((tag, index) => {
       tag.addEventListener("click", () => {
@@ -43,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".class-tag").forEach(tag => {
         if (tag.querySelector(".course-tooltip")) return;
   
-        const fullName = tag.getAttribute("data-full-name");
+        const fullName = tag.dataset.fullName;
         if (!fullName) return;
   
         const tooltip = document.createElement("div");
@@ -51,16 +60,57 @@ document.addEventListener("DOMContentLoaded", () => {
         tooltip.textContent = fullName;
   
         tag.appendChild(tooltip);
+        chrome.storage.sync.get(["courseTasks"], (data) => {
+            const tasks = data.courseTasks || [];
+        
+            tasks.forEach(task => {
+                console.log("Course name from content.js:", task.course);
+            });
+        });
+        
       });
     }
   
-  });
+     // Section for assignment headings and buttons
+    const titleEl = document.querySelector(".assign-title");
+    const weekEl = document.querySelector(".assign-week");
+    const leftBar = document.querySelector(".left-assign");
+    const rightBar = document.querySelector(".right-assign");
+
+    let order = ["assignments", "announcements", "calendar"];
+    let center = 0;
+
+    function render_headings(){
+        const centerKey = order[center]
+        const rightKey = order[(center + 1) % 3];
+        const leftKey = order[(center + 2) % 3];
+
+        const base = headings[centerKey];
+        titleEl.textContent = base.heading;
+        rightBar.textContent = headings[rightKey].icon;
+        leftBar.textContent = headings[leftKey].icon;
+    }
+
+    rightBar.addEventListener("click", () => {
+        center = (center + 1) % 3;
+        render_headings();
+    });
+
+    leftBar.addEventListener("click", () => {
+        center = (center + 2) % 3;
+        render_headings();
+    });
+
+    render_headings();
+
+
+//   });
   
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
-    
+    const todoItems = document.querySelectorAll(".todo-item");
     // Check if it's 00:00 (Midnight)
     if (now.getHours() === 0 && now.getMinutes() === 0) {
         console.log("Midnight cleanup triggered...");
@@ -205,28 +255,28 @@ const headings = {
     }
 }
 
-const titleEl = document.querySelector(".assign-title");
-const weekEl = document.querySelector(".assign-week");
-const leftBar = document.querySelector(".left-assign");
-const rightBar = document.querySelector(".right-assign");
+// const titleEl = document.querySelector(".assign-title");
+// const weekEl = document.querySelector(".assign-week");
+// const leftBar = document.querySelector(".left-assign");
+// const rightBar = document.querySelector(".right-assign");
 
-let order = ["assignments", "announcements", "calendar"];
-let center = 0; //central heading index
+// let order = ["assignments", "announcements", "calendar"];
+// let center = 0; //central heading index
 
-function render_headings(){
-    const centerKey = order[center]
-    const rightKey = order[(center + 1) % 3];
-    const leftKey = order[(center + 2) % 3];
+// function render_headings(){
+//     const centerKey = order[center]
+//     const rightKey = order[(center + 1) % 3];
+//     const leftKey = order[(center + 2) % 3];
 
-    const base = headings[centerKey];
-    titleEl.textContent = `${base.heading}`;
+//     const base = headings[centerKey];
+//     titleEl.textContent = `${base.heading}`;
 
-    // Right
-    rightBar.textContent = headings[rightKey].icon;
+//     // Right
+//     rightBar.textContent = headings[rightKey].icon;
 
-    // Left
-    leftBar.textContent = headings[leftKey].icon;
-}
+//     // Left
+//     leftBar.textContent = headings[leftKey].icon;
+// }
 
 // if the right heading is clicked, the center becomes the right and the order shifts to the left with the module 3 operator to wrap around
 rightBar.addEventListener("click", () => {
@@ -241,3 +291,5 @@ leftBar.addEventListener("click", () => {
 });
 
 render_headings();
+buildProgressRings(); // Initial empty rings
+// });
