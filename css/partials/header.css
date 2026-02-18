@@ -42,12 +42,27 @@ header {
     grid-template-columns: 1fr / 1fr / 1fr;
     grid-template-rows: 1fr / 1fr;
 }
-.filter-button {
+/* .filter-button {
     border-radius: 50px;
     width: 10px;
     height: 10px;
     align-self: center;
     justify-self: center;
+} */
+/* Filter Dropdown */
+.dropdown-content {
+    display: none;
+}
+.dropdown-content li {
+    list-style-type: none;
+}
+.assign-week:hover .dropdown-content {
+    display: block;
+    position: absolute;
+    top: 300px;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
 }
 /* Left filter button */
 .filter-button:first-child {
