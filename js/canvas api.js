@@ -1,6 +1,6 @@
 const config = {
     domain: 'byui.instructure.com',
-    token: '10706~RFNGenGvVJ2PmJBWUz6LTuhxzL73enCCtaWvzBVveYkTH33ey4PWX3XJcwZEXFNY', // ← REPLACE THIS WITH YOUR TOKEN
+    token: 'YOUR_TOKEN_HERE', // ← REPLACE THIS WITH YOUR TOKEN
 
     // SETTINGS: Change these to filter your results
     settings: {
