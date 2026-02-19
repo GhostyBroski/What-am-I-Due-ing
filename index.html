@@ -6,6 +6,7 @@
         <title>What Am I Due-ing</title>
         <link rel="stylesheet" href="css/styles.css">
         <script src="js/templates.js" defer></script>
+        <script src="js/canvas api.js" defer></script>
         <script src="js/main.js" defer></script>
     </head>
     <body>
@@ -56,29 +57,37 @@
                 </div>
                 <div class="right-assign"></div>
             </div>
-
             
         <!-- Assignment List -->
-            <div>
-                <!-- just to make sure the tag works -->
-                <section class="todo-item">
-                    <button class="myButton"></button>
-                    <h1>CSE 310</h1>
-                    <h2>W01-Prepare: Semester Planning</h2>
-                    <p>Due Jan 10 at 11:59 PM | 50 points</p>
-                </section>
-                <section class="todo-item">
-                    <button class="myButton"></button>
-                    <h1>[Course Code]</h1>
-                    <h2>[Assignment Name]</h2>
-                    <p>Due [Date] at [Time] | [Point Amount] points</p>
-                </section>
-                <section class="todo-item late">
-                    <button class="myButton"></button>
-                    <h1>[Course Code]</h1>
-                    <h2>[Assignment Name]</h2>
-                    <p>Due [Date] at [Time] | [Point Amount] points</p>
-                </section>
+            <div id="assignment-container">
+                <div id="loading-status" style="text-align: center; padding: 20px;">
+                    <p>🚀 Fetching Canvas Data...</p>
+                </div>
+                
+                <div id="overdue-list"></div>
+                <div id="upcoming-list">
+                    <!-- just to make sure the tag works -->
+                    <section class="todo-item">
+                        <button class="myButton"></button>
+                        <h1>CSE 310</h1>
+                        <h2>W01-Prepare: Semester Planning</h2>
+                        <p>Due Jan 10 at 11:59 PM | 50 points</p>
+                    </section>
+                    <section class="todo-item">
+                        <button class="myButton"></button>
+                        <h1>[Course Code]</h1>
+                        <h2>[Assignment Name]</h2>
+                        <p>Due [Date] at [Time] | [Point Amount] points</p>
+                    </section>
+                    <section class="todo-item late">
+                        <button class="myButton"></button>
+                        <h1>[Course Code]</h1>
+                        <h2>[Assignment Name]</h2>
+                        <p>Due [Date] at [Time] | [Point Amount] points</p>
+                    </section>
+                </div>
+                <div id="undated-list"></div>
+                
             </div>
         </main>
         <footer>

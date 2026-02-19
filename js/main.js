@@ -1,14 +1,3 @@
-chrome.storage.sync.get(["dashboardTasks", "courseTasks"], ({dashboardTasks = [], courseTasks = []}) => {
-
-    const all = [...dashboardTasks, ...courseTasks];
-    const clean = removeDuplicates(all);
-
-    const tasksOnly = clean.filter(task => !task.url.includes("discussion_topics"));
-
-    buildProgressRings(tasksOnly);
-});
-
-
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
@@ -60,13 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tooltip.textContent = fullName;
   
         tag.appendChild(tooltip);
-        chrome.storage.sync.get(["courseTasks"], (data) => {
-            const tasks = data.courseTasks || [];
-        
-            tasks.forEach(task => {
-                console.log("Course name from content.js:", task.course);
-            });
-        });
         
       });
     }
@@ -220,8 +202,9 @@ function colorForCourse(course) {
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
-        acc[task.course] ??=[];
-        acc[task.course].push(task);
+        const name = task.course_name || task.course || "Unknown";
+        acc[name] ??= [];
+        acc[name].push(task);
         return acc;
     }, {});
 }
@@ -282,12 +265,14 @@ const headings = {
 rightBar.addEventListener("click", () => {
     center = (center + 1) % 3;
     render_headings();
+    if (window.updateBucket) window.updateBucket(order[center]);
 });
 
 // if the left heading is clicked, the center becomes the left and the order shifts to the right with the module 3 operator to wrap around
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3; // equivalente a -1 mod 3
     render_headings();
+    if (window.updateBucket) window.updateBucket(order[center]);
 });
 
 render_headings();

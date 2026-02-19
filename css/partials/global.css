@@ -11,6 +11,6 @@
 body {
     background-color: #f5f5f5;
     color: #333;
-    width: 360px;              /* typical extension popup width */
+    width: 400px;              /* typical extension popup width */
     min-height: 600px;
 }
