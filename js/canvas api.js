@@ -1,10 +1,10 @@
 const config = {
     domain: 'byui.instructure.com',
-    token: 'YOUR_CANVAS_TOKEN_HERE', // ← REPLACE THIS WITH YOUR TOKEN
+    token: '10706~RFNGenGvVJ2PmJBWUz6LTuhxzL73enCCtaWvzBVveYkTH33ey4PWX3XJcwZEXFNY', // ← REPLACE THIS WITH YOUR TOKEN
 
     // SETTINGS: Change these to filter your results
     settings: {
-        daysOut: 7,          // Use 0 for today, 3, 7, or 999 for everything
+        daysOut: 999,          // Use 0 for today, 3, 7, or 999 for everything
         specificCourseId: null // Put a Course ID here to filter just one course
     }
 };
@@ -50,21 +50,20 @@ async function fetchCanvasDashboard() {
         for (const course of activeCourses) {
             console.log(`🔎 Scanning assignments for: ${course.name}`);
 
-            const [oRes, fRes, uRes] = await Promise.all([
-                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&bucket=overdue&include[]=submission&include[]=planner_overrides`),
-                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&bucket=future&include[]=submission&include[]=planner_overrides&order_by=due_at`),
+            const [allRes, uRes] = await Promise.all([
+                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&per_page=100&include[]=submission&include[]=planner_overrides&order_by=due_at`),
                 fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&bucket=undated&include[]=submission&include[]=planner_overrides`)
             ]);
 
-            const overdueAsns = await oRes.json();
-            const futureAsns = await fRes.json();
+            const courseAssignments = await allRes.json();
             const undatedAsns = await uRes.json();
 
             const processItem = (asm) => {
                 const isMarkedDone = asm.planner_overrides?.some(o => o.dismissed || o.marked_complete);
                 const status = asm.submission ? asm.submission.workflow_state : 'unsubmitted';
                 
-                if (isMarkedDone || status === 'graded' || status === 'submitted') return null;
+                const isFinished = isMarkedDone || status === 'submitted' || status === 'graded';
+                // if (isFinished || status === 'graded' || status === 'submitted') return null; // Skip if Canvas considers it done
 
                 return {
                     course_id: asm.course_id, // Captured for rendering logic
@@ -75,28 +74,28 @@ async function fetchCanvasDashboard() {
                     due_display: asm.due_at ? new Date(asm.due_at).toLocaleString() : "No Due Date",
                     rawDate: asm.due_at ? new Date(asm.due_at) : null,
                     link: asm.html_url,
-                    assignment_id: asm.id // Useful for unique keys in React/Vue
+                    assignment_id: asm.id, // Useful for unique keys in React/Vue
+                    isFinished: isFinished
                 };
             };
 
-            // Process Overdue
-            if (Array.isArray(overdueAsns)) {
-                overdueAsns.forEach(asm => {
+            if (Array.isArray(courseAssignments)) {
+                courseAssignments.forEach(asm => {
                     const item = processItem(asm);
-                    if (item && item.rawDate && item.rawDate >= floorDate) overdueList.push(item);
-                });
-            }
+                    if (!item) return;
 
-            // Process Upcoming
-            if (Array.isArray(futureAsns)) {
-                futureAsns.forEach(asm => {
-                    const item = processItem(asm);
-                    if (item) {
-                        if (item.rawDate) {
-                            if (settings.daysOut >= 999 || item.rawDate <= limitDate) upcomingList.push(item);
+                    // If it has a date, it goes into the main list
+                    if (item.rawDate) {
+                        // Check if it's overdue (past now AND unsubmitted)
+                        const isOverdue = item.rawDate < now;
+                        if (isOverdue) {
+                            overdueList.push(item);
                         } else {
-                            undatedList.push(item);
+                            upcomingList.push(item);
                         }
+                    } else if (item.points > 0) {
+                        // Point-bearing undated items go to upcoming
+                        upcomingList.push(item);
                     }
                 });
             }
@@ -145,6 +144,8 @@ async function fetchCanvasDashboard() {
             upcoming: upcomingList,
             undated: uniqueUndated
         };
+
+        window.lastFetchedData = dashboardData;
 
         if (typeof window.renderDashboard === "function") {
             window.renderDashboard(dashboardData);

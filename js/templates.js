@@ -12,6 +12,25 @@ let state = {
     currentBucket: 'upcoming' // matches the center heading
 };
 
+const SEMESTER_START = new Date('2026-01-05T00:00:00');
+let currentViewWeek = getSemesterWeek(new Date());
+
+function getSemesterWeek(date) {
+    const diffInMs = date - SEMESTER_START;
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    return Math.ceil((diffInDays + 1) / 7);
+}
+
+function getRangeForWeek(weekNum) {
+    const start = new Date(SEMESTER_START);
+    start.setDate(start.getDate() + (weekNum - 1) * 7);
+    
+    const end = new Date(start);
+    end.setDate(end.getDate() + 7); // 7 days later
+    
+    return { start, end };
+}
+
 /**
  * 1. UI Helper: Extracts a clean code like "CSE 310" from Canvas course_code
  */
@@ -27,6 +46,8 @@ function renderDashboard(data) {
     const loader = document.getElementById("loading-status");
     if (loader) loader.style.display = "none";
 
+    const range = getRangeForWeek(window.currentViewWeek);
+
     // 2. Clear current lists
     const containers = {
         overdue: document.getElementById("overdue-list"),
@@ -40,9 +61,10 @@ function renderDashboard(data) {
     renderCourseList(data.courses, data);
 
     // 4. Render the 3 Assignment Sections
-    renderSection(data.overdue, containers.overdue, "late");
-    renderSection(data.upcoming, containers.upcoming, "");
-    renderSection(data.undated, containers.undated, "optional");
+    
+    const allDated = [...data.overdue, ...data.upcoming];
+    renderSection(allDated, containers.upcoming, "");
+    
 
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
@@ -59,39 +81,78 @@ function renderDashboard(data) {
 async function renderSection(list, container, extraClass) {
     if (!container) return;
 
-    // Grab the list of completed IDs from storage
+    // 1. Storage & Filtering
     const storage = await chrome.storage.local.get("completedIds");
     const completedIds = storage.completedIds || [];
+    const weekRange = getRangeForWeek(currentViewWeek);
 
-    const selectedId = window.selectedCourseId;
-    const items = selectedId ? list.filter(a => a.course_id === selectedId) : list;
+    const items = list.filter(task => {
+        const matchesCourse = !window.selectedCourseId || task.course_id === window.selectedCourseId;
+        
+        // If it has no date but has points, show it in the current week (or week 1)
+        if (!task.rawDate && task.points > 0) return true; 
+
+        const matchesWeek = task.rawDate >= weekRange.start && task.rawDate < weekRange.end;
+        return matchesCourse && matchesWeek;
+    });
+
+    document.querySelector(".assign-week").textContent = `week ${currentViewWeek}`;
+    container.style.display = items.length > 0 ? "block" : "none";
+    container.innerHTML = "";
 
     container.style.display = items.length > 0 ? "block" : "none";
+    container.innerHTML = ""; // Clear container
+
+    // 2. Sorting by Date (Ensure "No Due Date" is at the bottom)
+    items.sort((a, b) => {
+        if (!a.rawDate) return 1;
+        if (!b.rawDate) return -1;
+        return a.rawDate - b.rawDate;
+    });
+
+    let lastWeekLabel = "";
 
     items.forEach(task => {
-        const isDone = completedIds.includes(task.assignment_id);
+        const weekNum = getSemesterWeek(task.rawDate);
+        const dayName = task.rawDate ? task.rawDate.toLocaleDateString(undefined, { weekday: 'long' }) : "";
+        const dateDigit = task.rawDate ? task.rawDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : "";
+        
+        // Header Label: "Week 7 - Thursday, Feb 19"
+        let currentHeaderLabel = task.rawDate ? `Week ${weekNum} — ${dayName}, ${dateDigit}` : "No Due Date";
+
+        if (currentHeaderLabel !== lastWeekLabel) {
+            const header = document.createElement("div");
+            header.className = "date-header";
+            header.innerHTML = `<h3>${currentHeaderLabel}</h3>`;
+            container.appendChild(header);
+            lastWeekLabel = currentHeaderLabel;
+        }
+
+        // 4. Create the Assignment Item (Same as your original logic)
+        const isManuallyDone = completedIds.includes(task.assignment_id);
+        const isCanvasDone = task.isFinished;
         const item = document.createElement("section");
+        const completedClass = (isManuallyDone || isCanvasDone) ? 'completed' : '';
+        // if (completedClass) return null; // Skip rendering if marked done in Canvas
+        item.className = `todo-item ${extraClass} ${completedClass}`;
         
-        // If it was previously crossed out, add the class immediately
-        item.className = `todo-item ${extraClass} ${isDone ? 'completed' : ''}`;
-        
-        const dateText = task.due_display === "No Due Date" 
+        // Clean up text: only show time/points inside the item since date is in the header
+        const timeText = task.due_display === "No Due Date" 
             ? "No Due Date" 
-            : `Due ${task.due_display}`;
+            : task.rawDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
         item.innerHTML = `
             <button class="myButton"></button>
             <h1>${formatCourseCode(task.course_code)}</h1>
             <h2>${task.name}</h2>
-            <p>${dateText} | ${task.points} points</p>
+            <p>${timeText} | ${task.points} points</p>
         `;
 
+        // Logic for buttons and links
         const btn = item.querySelector(".myButton");
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
             const nowCompleted = item.classList.toggle("completed");
-            
-            // Save or Remove the ID from persistent storage
             await toggleSavedCompletion(task.assignment_id, nowCompleted);
         });
 
@@ -101,6 +162,11 @@ async function renderSection(list, container, extraClass) {
 
         container.appendChild(item);
     });
+
+    const weekIndicator = document.querySelector(".assign-week");
+    if (weekIndicator) {
+        weekIndicator.textContent = `Week ${getSemesterWeek(new Date())}`;
+    }
 }
 
 // Helper to save to Chrome Storage
@@ -140,6 +206,21 @@ function renderCourseList(courses, fullData) {
 
     if (typeof fullNamehover === "function") fullNamehover();
 }
+
+document.getElementById("prev-week").addEventListener("click", () => {
+    if (currentViewWeek > 1) {
+        currentViewWeek--;
+        // Re-render the dashboard with existing data
+        if (window.lastFetchedData) renderDashboard(window.lastFetchedData);
+    }
+});
+
+document.getElementById("next-week").addEventListener("click", () => {
+    if (currentViewWeek < 14) { // Typical semester length
+        currentViewWeek++;
+        if (window.lastFetchedData) renderDashboard(window.lastFetchedData);
+    }
+});
 
 // Export functions for use in main.js
 window.renderDashboard = renderDashboard;
