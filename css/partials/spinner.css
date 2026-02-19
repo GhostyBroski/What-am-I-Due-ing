@@ -1,0 +1,30 @@
+#loading-status {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Smooth transition for when data appears */
+#assignment-container {
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* A simple CSS spinner */
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
