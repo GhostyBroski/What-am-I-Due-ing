@@ -85,10 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     render_headings();
 
-
-//   });
-  
-
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
     const now = new Date();
