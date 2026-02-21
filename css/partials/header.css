@@ -16,6 +16,7 @@ header {
     grid-column: 2/3;
     grid-row: 1/2;
     text-align: center;
+    align-self: center;
 }
 .settings-button {
     border-radius: 50px;
