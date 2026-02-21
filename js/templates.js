@@ -42,6 +42,8 @@ function formatCourseCode(code) {
 }
 
 function renderDashboard(data) {
+    currentViewWeek = window.currentViewWeek || getSemesterWeek(new Date());
+
     // 1. Hide the loading status and placeholders
     const loader = document.getElementById("loading-status");
     if (loader) loader.style.display = "none";
@@ -86,22 +88,27 @@ async function renderSection(list, container, extraClass) {
     const completedIds = storage.completedIds || [];
     const weekRange = getRangeForWeek(currentViewWeek);
 
-    const items = list.filter(task => {
+    const cleanList = list.map(item => ({
+        ...item,
+        rawDate: item.rawDate ? new Date(item.rawDate) : null
+    }));
+
+    const items = cleanList.filter(task => {
         const matchesCourse = !window.selectedCourseId || task.course_id === window.selectedCourseId;
         
-        // If it has no date but has points, show it in the current week (or week 1)
         if (!task.rawDate && task.points > 0) return true; 
 
+        // Now task.rawDate is a real Date object, so this works!
         const matchesWeek = task.rawDate >= weekRange.start && task.rawDate < weekRange.end;
         return matchesCourse && matchesWeek;
+        // return matchesCourse;
     });
 
-    document.querySelector(".assign-week").textContent = `week ${currentViewWeek}`;
-    container.style.display = items.length > 0 ? "block" : "none";
-    container.innerHTML = "";
+    const weekDisplay = document.querySelector(".assign-week");
+    if (weekDisplay) weekDisplay.textContent = `Week ${currentViewWeek}`;
 
     container.style.display = items.length > 0 ? "block" : "none";
-    container.innerHTML = ""; // Clear container
+    container.innerHTML = "";
 
     // 2. Sorting by Date (Ensure "No Due Date" is at the bottom)
     items.sort((a, b) => {
@@ -137,7 +144,7 @@ async function renderSection(list, container, extraClass) {
         item.className = `todo-item ${extraClass} ${completedClass}`;
         
         // Clean up text: only show time/points inside the item since date is in the header
-        const timeText = task.due_display === "No Due Date" 
+        const timeText = !task.rawDate 
             ? "No Due Date" 
             : task.rawDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
@@ -163,10 +170,10 @@ async function renderSection(list, container, extraClass) {
         container.appendChild(item);
     });
 
-    const weekIndicator = document.querySelector(".assign-week");
-    if (weekIndicator) {
-        weekIndicator.textContent = `Week ${getSemesterWeek(new Date())}`;
-    }
+    // const weekIndicator = document.querySelector(".assign-week");
+    // if (weekIndicator) {
+    //     weekIndicator.textContent = `Week ${getSemesterWeek(new Date())}`;
+    // }
 }
 
 // Helper to save to Chrome Storage
@@ -208,16 +215,15 @@ function renderCourseList(courses, fullData) {
 }
 
 document.getElementById("prev-week").addEventListener("click", () => {
-    if (currentViewWeek > 1) {
-        currentViewWeek--;
-        // Re-render the dashboard with existing data
+    if (window.currentViewWeek > 1) {
+        window.currentViewWeek--; // Update global week
         if (window.lastFetchedData) renderDashboard(window.lastFetchedData);
     }
 });
 
 document.getElementById("next-week").addEventListener("click", () => {
-    if (currentViewWeek < 14) { // Typical semester length
-        currentViewWeek++;
+    if (window.currentViewWeek < 14) {
+        window.currentViewWeek++; // Update global week
         if (window.lastFetchedData) renderDashboard(window.lastFetchedData);
     }
 });
