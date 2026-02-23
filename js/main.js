@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(url, "_blank");
       });
     });
+    //Slider buton to show all or only uncompleted assignments
   
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {

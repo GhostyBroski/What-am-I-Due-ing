@@ -1,6 +1,7 @@
 const config = {
     domain: 'byui.instructure.com',
-    token: '', // ← REPLACE THIS WITH YOUR TOKEN
+    token: '', 
+// ← REPLACE THIS WITH YOUR TOKEN
 
     // SETTINGS: Change these to filter your results
     settings: {
@@ -8,6 +9,104 @@ const config = {
         specificCourseId: null // Put a Course ID here to filter just one course
     }
 };
+
+// async function startOAuth() {
+//     const CLIENT_ID = 'YOUR_CANVAS_CLIENT_ID';
+//     const REDIRECT_URI = chrome.identity.getRedirectURL(); // Generates the https://<id>.chromiumapp.org/ URL
+    
+//     const authUrl = `https://byui.instructure.com/login/oauth2/auth?` +
+//                     `client_id=${CLIENT_ID}&` +
+//                     `response_type=code&` +
+//                     `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+//                     `scope=url_scopes_here`;
+
+//     chrome.identity.launchWebAuthFlow({
+//         url: authUrl,
+//         interactive: true
+//     }, async (redirectUrl) => {
+//         if (chrome.runtime.lastError || !redirectUrl) {
+//             console.error("Auth failed:", chrome.runtime.lastError);
+//             return;
+//         }
+
+//         // Extract the temporary code from the URL
+//         const url = new URL(redirectUrl);
+//         const code = url.searchParams.get('code');
+
+//         // Step 3: Send this code to your PROXY, not directly to Canvas
+//         const tokenData = await exchangeCodeViaProxy(code);
+        
+//         // Save the token for future use
+//         chrome.storage.local.set({ canvasToken: tokenData.access_token });
+//     });
+// }
+
+// async function handleLogin() {
+//     const CLIENT_ID = "YOUR_CLIENT_ID";
+//     // This is a special URL Chrome generates for your specific extension
+//     const REDIRECT_URI = chrome.identity.getRedirectURL(); 
+    
+//     const authUrl = `https://byui.instructure.com/login/oauth2/auth?` +
+//         `client_id=${CLIENT_ID}&` +
+//         `response_type=code&` +
+//         `redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+
+//     // 1. Open the Canvas Login Window
+//     chrome.identity.launchWebAuthFlow({
+//         url: authUrl,
+//         interactive: true
+//     }, async (responseUrl) => {
+//         const url = new URL(responseUrl);
+//         const code = url.searchParams.get('code');
+
+//         // 2. Send the code to your NEW Vercel proxy
+//         const tokenResponse = await fetch('https://vercel.com/ghostybroskis-projects/whatamidueing', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ 
+//                 code: code,
+//                 redirect_uri: REDIRECT_URI
+//             })
+//         });
+
+//         const data = await tokenResponse.json();
+        
+//         // 3. Save the token and refresh the dashboard!
+//         if (data.access_token) {
+//             await chrome.storage.local.set({ canvasToken: data.access_token });
+//             fetchCanvasDashboard(); 
+//         }
+//     });
+// }
+
+async function initDashboard() {
+    // 1. Set the initial week to "Now"
+    if (typeof getSemesterWeek === "function") {
+        window.currentViewWeek = getSemesterWeek(new Date());
+    }
+
+    const storage = await chrome.storage.local.get("cachedDashboard");
+    
+    if (storage.cachedDashboard) {
+        // Use the same hydrate logic we built to turn strings into Dates
+        const hydrate = (item) => ({
+            ...item,
+            rawDate: item.rawDate ? new Date(item.rawDate) : null
+        });
+
+        const dashboardData = {
+            courses: storage.cachedDashboard.courses,
+            overdue: (storage.cachedDashboard.overdue || []).map(hydrate),
+            upcoming: (storage.cachedDashboard.upcoming || []).map(hydrate),
+            undated: (storage.cachedDashboard.undated || []).map(hydrate)
+        };
+
+        window.lastFetchedData = dashboardData;
+        window.renderDashboard(dashboardData); // This will now obey Week 7
+    }
+
+    fetchCanvasDashboard();
+}
 
 async function fetchCanvasDashboard() {
     const { domain, token, settings } = config;
@@ -72,7 +171,7 @@ async function fetchCanvasDashboard() {
                     name: asm.name,
                     points: asm.points_possible !== null ? asm.points_possible : 0,
                     due_display: asm.due_at ? new Date(asm.due_at).toLocaleString() : "No Due Date",
-                    rawDate: asm.due_at ? new Date(asm.due_at) : null,
+                    rawDate: asm.due_at ? asm.due_at : null,
                     link: asm.html_url,
                     assignment_id: asm.id, // Useful for unique keys in React/Vue
                     isFinished: isFinished
@@ -84,10 +183,13 @@ async function fetchCanvasDashboard() {
                     const item = processItem(asm);
                     if (!item) return;
 
+                    const now = new Date();
+
                     // If it has a date, it goes into the main list
                     if (item.rawDate) {
+                        const d = new Date(item.rawDate);
                         // Check if it's overdue (past now AND unsubmitted)
-                        const isOverdue = item.rawDate < now;
+                        const isOverdue = d < now;
                         if (isOverdue) {
                             overdueList.push(item);
                         } else {
@@ -112,7 +214,7 @@ async function fetchCanvasDashboard() {
         // Deduplicate
         const uniqueUndated = Array.from(new Set(undatedList.map(a => a.link)))
             .map(link => undatedList.find(a => a.link === link));
-
+        
         // Sorts
         overdueList.sort((a, b) => a.rawDate - b.rawDate);
         upcomingList.sort((a, b) => a.rawDate - b.rawDate);
@@ -138,12 +240,22 @@ async function fetchCanvasDashboard() {
             console.table(uniqueUndated, columns);
         }
 
+
         const dashboardData = {
             courses: activeCourses,
             overdue: overdueList,
             upcoming: upcomingList,
             undated: uniqueUndated
         };
+
+        console.log("💾 Saving to Storage:", {
+            courses: dashboardData.courses.length,
+            overdue: dashboardData.overdue.length,
+            upcoming: dashboardData.upcoming.length,
+            undated: dashboardData.undated.length
+        });
+
+        await chrome.storage.local.set({ "cachedDashboard": dashboardData });
 
         window.lastFetchedData = dashboardData;
 
@@ -158,4 +270,4 @@ async function fetchCanvasDashboard() {
     }
 }
 
-fetchCanvasDashboard();
+initDashboard();

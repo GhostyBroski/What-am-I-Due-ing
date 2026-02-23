@@ -3,8 +3,13 @@
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
   "permissions": [
+    "identity",
     "storage",
+    "unlimitedStorage",
     "alarms"
+  ],
+  "host_permissions": [
+    "https://byui.instructure.com/*"
   ],
   "action": {
     "default_popup": "index.html"

@@ -4,9 +4,9 @@
 
 .class-list {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 2px;
     height: 200px;
     justify-content: center;
     align-content: center;
@@ -25,6 +25,7 @@
     border: 1px solid #ccc;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: center;
 }
 
 .class-tag:hover {
@@ -143,4 +144,8 @@
 
 .todo-item.completed h2 {
     text-decoration: line-through;
+}
+#assignments-shown-slider{
+    
+
 }
