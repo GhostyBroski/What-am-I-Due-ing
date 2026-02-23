@@ -128,7 +128,21 @@ function buildProgressRings(tasks) {
     const gap = 6;
     let radius = 60;
 
-    courses.forEach(([course, courseTasks]) => {
+    const palette = [
+        "#4a90e2",
+        "#50e3c2",
+        "#f5a623",
+        "#bd10e0",
+        "#7ed321",
+        "#d0021b",
+        "#417505",
+        "#9013fe",
+        "#b8e986",
+        "#f8e71c"
+    ];
+
+    courses.forEach(([course, courseTasks], index) => {
+        const color = palette[index % palette.length];
         if (radius <= 10) return; // avoid overlap
 
         const total = courseTasks.length;
@@ -144,7 +158,7 @@ function buildProgressRings(tasks) {
         // Progress ring
         svg.appendChild(makeCircle({
             r: radius,
-            stroke: colorForCourse(course),
+            stroke: color,
             percent
         }));
 
@@ -177,22 +191,20 @@ function makeCircle({ r, stroke, percent = 1 }) {
     return circle;
 }
 
-function colorForCourse(course) {
-    const colors = [
-        "#4a90e2",
-        "#50e3c2",
-        "#f5a623",
-        "#bd10e0",
-        "#7ed321"
-    ];
+// function colorForCourse(course) {
+    
 
-    let hash = 0;
-    for (let char of course) {
-        hash = (hash + char.charCodeAt(0)) % colors.length;
-    }
+//     // let hash = 0;
+//     // for (let char of course) {
+//     //     hash = (hash + char.charCodeAt(0)) % palette.length;
+//     // }
 
-    return colors[hash];
-}
+//     // return palette[hash];
+//     courses.forEach(([course, courseTasks], index) => {
+//         const color = palette[index % palette.length];
+//         courseColors[course] = color;
+//     });
+// }
 
 
 
