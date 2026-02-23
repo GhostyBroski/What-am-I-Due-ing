@@ -1,7 +1,8 @@
 const config = {
     domain: 'byui.instructure.com',
-    token: '', // ← REPLACE THIS WITH YOUR TOKEN
-    
+    token: '', 
+// ← REPLACE THIS WITH YOUR TOKEN
+
     // SETTINGS: Change these to filter your results
     settings: {
         daysOut: 999,          // Use 0 for today, 3, 7, or 999 for everything
