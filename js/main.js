@@ -151,27 +151,20 @@ function buildProgressRings(tasks) {
 
     const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
-    // const center = 70;
-    const thickness = 8;
-    const gap = 6;
-    let radius = 60;
+    const center = 70;
+    // const thickness = 8;
+    // const gap = 6;
+    const maxRadius = 65;
+    const minRadius = 15;
+    const availableSpace = maxRadius - minRadius;
+    const thickness = availableSpace / courses.length * 0.8;
+    const gap = availableSpace / courses.length * 0.2;
 
-    // const palette = [
-    //     "#4a90e2",
-    //     "#50e3c2",
-    //     "#f5a623",
-    //     "#bd10e0",
-    //     "#7ed321",
-    //     "#d0021b",
-    //     "#417505",
-    //     "#9013fe",
-    //     "#b8e986",
-    //     "#f8e71c"
-    // ];
+    let radius = minRadius;
 
     courses.forEach(([courseId, courseTasks], index) => {
 
-        if (radius <= 10) return; // avoid overlap
+        // if (radius <= 10) return; // avoid overlap
 
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
@@ -192,7 +185,7 @@ function buildProgressRings(tasks) {
             percent
         }));
 
-        radius -= thickness + gap;
+        radius += thickness + gap;
     });
 }
 
