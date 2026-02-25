@@ -16,6 +16,7 @@ header {
     grid-column: 2/3;
     grid-row: 1/2;
     text-align: center;
+    align-self: center;
 }
 .settings-button {
     border-radius: 50px;
@@ -86,4 +87,30 @@ header {
     align-self: center;
     justify-self: center;
     font-size: small;
+}
+
+.week-selector {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment */
+    gap: 15px; /* Space between arrows and text */
+}
+
+.assign-week {
+    margin: 0; /* Remove default paragraph margins */
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.nav-btn:hover {
+    color: #000;
 }

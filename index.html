@@ -6,6 +6,7 @@
         <title>What Am I Due-ing</title>
         <link rel="stylesheet" href="css/styles.css">
         <script src="js/templates.js" defer></script>
+        <script src="js/canvas api.js" defer></script>
         <script src="js/main.js" defer></script>
     </head>
     <body>
@@ -46,6 +47,18 @@
                 <section class="class-tag">
                     <h1>[Code]</h1>
                 </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
+                <section class="class-tag">
+                    <h1>[Code]</h1>
+                    <!-- <p>- [Class Name]</p> -->
+                </section>
             </div>
         <!-- Progress Circles -->
             <div class="circle-progress-display">
@@ -56,42 +69,50 @@
             <div id="assignments-heading">
                 <div class="left-assign"></div>
                 <div class="title-container">
-                    <h1 class="assign-title"></h1>
-                    <div class="assign-week">
-                        1 week
-                        <div class="dropdown-content">
-                            <ul>
-                                <li>1 day</li>
-                                <li>1 week</li>
-                                <li>2 weeks</li>
-                                <li>1 month</li>
-                            </ul>
+                    <h1 class="assign-title">Assignments</h1>
+                    <div class="week-selector">
+                        <button id="prev-week" class="nav-btn">◀</button>
+                        <p class="assign-week">Week 7</p>
+                        <button id="next-week" class="nav-btn">▶</button>
+                        <div id="assignments-shown-slider">
+                            <button id="slider-status"></button>
                         </div>
-                    </div> <!-- Assignment filter indicator -->
+                    </div>
                 </div>
                 <div class="right-assign"></div>
-            </div>            
+            </div>      
+
         <!-- Assignment List -->
-            <div>
-                <!-- just to make sure the tag works -->
-                <section class="todo-item">
-                    <button class="myButton"></button>
-                    <h1>CSE 310</h1>
-                    <h2>W01-Prepare: Semester Planning</h2>
-                    <p>Due Jan 10 at 11:59 PM | 50 points</p>
-                </section>
-                <section class="todo-item">
-                    <button class="myButton"></button>
-                    <h1>[Course Code]</h1>
-                    <h2>[Assignment Name]</h2>
-                    <p>Due [Date] at [Time] | [Point Amount] points</p>
-                </section>
-                <section class="todo-item late">
-                    <button class="myButton"></button>
-                    <h1>[Course Code]</h1>
-                    <h2>[Assignment Name]</h2>
-                    <p>Due [Date] at [Time] | [Point Amount] points</p>
-                </section>
+            <div id="assignment-container">
+                <div id="loading-status">
+                    <div class="spinner"></div>
+                    <p>🚀 Syncing with Canvas...</p>
+                </div>
+                
+                <div id="overdue-list"></div>
+                <div id="upcoming-list">
+                    <!-- just to make sure the tag works -->
+                    <section class="todo-item">
+                        <button class="myButton"></button>
+                        <h1>CSE 310</h1>
+                        <h2>W01-Prepare: Semester Planning</h2>
+                        <p>Due Jan 10 at 11:59 PM | 50 points</p>
+                    </section>
+                    <section class="todo-item">
+                        <button class="myButton"></button>
+                        <h1>[Course Code]</h1>
+                        <h2>[Assignment Name]</h2>
+                        <p>Due [Date] at [Time] | [Point Amount] points</p>
+                    </section>
+                    <section class="todo-item late">
+                        <button class="myButton"></button>
+                        <h1>[Course Code]</h1>
+                        <h2>[Assignment Name]</h2>
+                        <p>Due [Date] at [Time] | [Point Amount] points</p>
+                    </section>
+                </div>
+                <div id="undated-list"></div>
+                
             </div>
         </main>
         <footer>
