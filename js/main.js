@@ -56,37 +56,59 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   
-     // Section for assignment headings and buttons
-    const titleEl = document.querySelector(".assign-title");
-    const weekEl = document.querySelector(".assign-week");
-    const leftBar = document.querySelector(".left-assign");
-    const rightBar = document.querySelector(".right-assign");
-
-    let order = ["assignments", "announcements", "calendar"];
-    let center = 0;
-
-    function render_headings(){
-        const centerKey = order[center]
-        const rightKey = order[(center + 1) % 3];
-        const leftKey = order[(center + 2) % 3];
-
-        const base = headings[centerKey];
-        titleEl.textContent = base.heading;
-        rightBar.textContent = headings[rightKey].icon;
-        leftBar.textContent = headings[leftKey].icon;
+const headings = {
+    "assignments": {
+        "heading": "Assignments",
+        "icon": "📝"
+    },
+    "announcements": {
+        "heading": "Announcements",
+        "icon": "📢"
+    },
+    "calendar": {
+        "heading": "Calendar",
+        "icon": "📅"
     }
+}
 
-    rightBar.addEventListener("click", () => {
-        center = (center + 1) % 3;
-        render_headings();
-    });
+ // Section for assignment headings and buttons
+const titleEl = document.querySelector(".assign-title");
+const weekEl = document.querySelector(".assign-week");
+const leftBar = document.querySelector(".left-assign");
+const rightBar = document.querySelector(".right-assign");
+let order = ["assignments", "announcements", "calendar"];
+let center = 0;
 
-    leftBar.addEventListener("click", () => {
-        center = (center + 2) % 3;
-        render_headings();
-    });
+function render_headings(){
+    const centerKey = order[center]
+    const rightKey = order[(center + 1) % 3];
+    const leftKey = order[(center + 2) % 3];
 
+    const base = headings[centerKey];
+    titleEl.textContent = base.heading;
+    rightBar.textContent = headings[rightKey].icon;
+    leftBar.textContent = "HOLAAAA";
+}
+
+rightBar.addEventListener("click", () => {
+    center = (center + 1) % 3;
     render_headings();
+});
+
+
+
+function render_headings2(){
+    const leftBar = document.querySelector(".left-assign");
+    leftBar.textContent = "HOLAAAA";
+}
+render_headings2();
+
+leftBar.addEventListener("click", () => {
+    center = (center + 2) % 3;
+    render_headings();
+});
+
+
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
   function checkMidnight() {
@@ -131,7 +153,21 @@ function buildProgressRings(tasks) {
     const gap = 6;
     let radius = 60;
 
-    courses.forEach(([course, courseTasks]) => {
+    const palette = [
+        "#4a90e2",
+        "#50e3c2",
+        "#f5a623",
+        "#bd10e0",
+        "#7ed321",
+        "#d0021b",
+        "#417505",
+        "#9013fe",
+        "#b8e986",
+        "#f8e71c"
+    ];
+
+    courses.forEach(([course, courseTasks], index) => {
+        const color = palette[index % palette.length];
         if (radius <= 10) return; // avoid overlap
 
         const total = courseTasks.length;
@@ -147,7 +183,7 @@ function buildProgressRings(tasks) {
         // Progress ring
         svg.appendChild(makeCircle({
             r: radius,
-            stroke: colorForCourse(course),
+            stroke: color,
             percent
         }));
 
@@ -180,22 +216,20 @@ function makeCircle({ r, stroke, percent = 1 }) {
     return circle;
 }
 
-function colorForCourse(course) {
-    const colors = [
-        "#4a90e2",
-        "#50e3c2",
-        "#f5a623",
-        "#bd10e0",
-        "#7ed321"
-    ];
+// function colorForCourse(course) {
+    
 
-    let hash = 0;
-    for (let char of course) {
-        hash = (hash + char.charCodeAt(0)) % colors.length;
-    }
+//     // let hash = 0;
+//     // for (let char of course) {
+//     //     hash = (hash + char.charCodeAt(0)) % palette.length;
+//     // }
 
-    return colors[hash];
-}
+//     // return palette[hash];
+//     courses.forEach(([course, courseTasks], index) => {
+//         const color = palette[index % palette.length];
+//         courseColors[course] = color;
+//     });
+// }
 
 
 
@@ -220,60 +254,6 @@ function removeDuplicates(tasks) {
     });
 }
 
-// Section for assigment headings and buttons
-// Map the url path and store an icon and heading for each section
-const headings = {
-    "assignments": {
-        "heading": "Assignments",
-        "icon": "📝"
-    },
-    "announcements": {
-        "heading": "Announcements",
-        "icon": "📢"
-    },
-    "calendar": {
-        "heading": "Calendar",
-        "icon": "📅"
-    }
-}
 
-// const titleEl = document.querySelector(".assign-title");
-// const weekEl = document.querySelector(".assign-week");
-// const leftBar = document.querySelector(".left-assign");
-// const rightBar = document.querySelector(".right-assign");
-
-// let order = ["assignments", "announcements", "calendar"];
-// let center = 0; //central heading index
-
-// function render_headings(){
-//     const centerKey = order[center]
-//     const rightKey = order[(center + 1) % 3];
-//     const leftKey = order[(center + 2) % 3];
-
-//     const base = headings[centerKey];
-//     titleEl.textContent = `${base.heading}`;
-
-//     // Right
-//     rightBar.textContent = headings[rightKey].icon;
-
-//     // Left
-//     leftBar.textContent = headings[leftKey].icon;
-// }
-
-// if the right heading is clicked, the center becomes the right and the order shifts to the left with the module 3 operator to wrap around
-rightBar.addEventListener("click", () => {
-    center = (center + 1) % 3;
-    render_headings();
-    if (window.updateBucket) window.updateBucket(order[center]);
-});
-
-// if the left heading is clicked, the center becomes the left and the order shifts to the right with the module 3 operator to wrap around
-leftBar.addEventListener("click", () => {
-    center = (center + 2) % 3; // equivalente a -1 mod 3
-    render_headings();
-    if (window.updateBucket) window.updateBucket(order[center]);
-});
-
-render_headings();
 buildProgressRings(); // Initial empty rings
 // });
