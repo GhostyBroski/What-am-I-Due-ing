@@ -145,7 +145,26 @@
 .todo-item.completed h2 {
     text-decoration: line-through;
 }
-#assignments-shown-slider{
-    
+#assignments-shown-slider {
+    width: 30px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50px;
+    position: relative;
+}
 
+#slider-status {
+    width: 20px;
+    height: 19px;
+    background-color: #a3b18a;
+    border-radius: 50%;
+    border: none;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+#slider-status.active{
+    left: 9px;
 }

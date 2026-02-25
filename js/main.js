@@ -23,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     //Slider buton to show all or only uncompleted assignments
-  
+    function sliderViewAssignments("#slider-status"){
+        button.addEventListener()
+    }
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {
       const button = item.querySelector(".myButton");
