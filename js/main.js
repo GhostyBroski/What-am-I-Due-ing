@@ -143,37 +143,42 @@ leftBar.addEventListener("click", () => {
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
+
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
 
-    const courses = Object.entries(groupByCourse(tasks));
+    const grouped = groupByCourse(tasks);
 
-    const center = 70;
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
+
+    // const center = 70;
     const thickness = 8;
     const gap = 6;
     let radius = 60;
 
-    const palette = [
-        "#4a90e2",
-        "#50e3c2",
-        "#f5a623",
-        "#bd10e0",
-        "#7ed321",
-        "#d0021b",
-        "#417505",
-        "#9013fe",
-        "#b8e986",
-        "#f8e71c"
-    ];
+    // const palette = [
+    //     "#4a90e2",
+    //     "#50e3c2",
+    //     "#f5a623",
+    //     "#bd10e0",
+    //     "#7ed321",
+    //     "#d0021b",
+    //     "#417505",
+    //     "#9013fe",
+    //     "#b8e986",
+    //     "#f8e71c"
+    // ];
 
-    courses.forEach(([course, courseTasks], index) => {
-        const color = palette[index % palette.length];
+    courses.forEach(([courseId, courseTasks], index) => {
+
         if (radius <= 10) return; // avoid overlap
 
         const total = courseTasks.length;
-        const completed = courseTasks.filter(t => t.completed).length;
+        const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
+        const hue = (index *360) / courses.length;
+        const color = `hsl(${hue}, 70%, 50%)`;
         // Background ring
         svg.appendChild(makeCircle({
             r: radius,
@@ -235,9 +240,8 @@ function makeCircle({ r, stroke, percent = 1 }) {
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
-        const name = task.course_name || task.course || "Unknown";
-        acc[name] ??= [];
-        acc[name].push(task);
+        acc[task.course_id] ??= [];
+        acc[task.course_id].push(task);
         return acc;
     }, {});
 }
