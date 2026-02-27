@@ -152,8 +152,6 @@ function buildProgressRings(tasks) {
     const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
     const center = 70;
-    // const thickness = 8;
-    // const gap = 6;
     const maxRadius = 65;
     const minRadius = 15;
     const availableSpace = maxRadius - minRadius;
@@ -163,8 +161,6 @@ function buildProgressRings(tasks) {
     let radius = minRadius;
 
     courses.forEach(([courseId, courseTasks], index) => {
-
-        // if (radius <= 10) return; // avoid overlap
 
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
@@ -213,22 +209,6 @@ function makeCircle({ r, stroke, percent = 1 }) {
 
     return circle;
 }
-
-// function colorForCourse(course) {
-    
-
-//     // let hash = 0;
-//     // for (let char of course) {
-//     //     hash = (hash + char.charCodeAt(0)) % palette.length;
-//     // }
-
-//     // return palette[hash];
-//     courses.forEach(([course, courseTasks], index) => {
-//         const color = palette[index % palette.length];
-//         courseColors[course] = color;
-//     });
-// }
-
 
 
 function groupByCourse(tasks) {
