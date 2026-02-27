@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
-    // const classTags = document.querySelectorAll(".class-tag");
+    const classTags = document.querySelectorAll(".class-tag");
     // const classLinks = [
     //   "https://byui.instructure.com/courses/310",
     //   "https://byui.instructure.com/courses/212",
@@ -23,6 +23,21 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     // //Slider buton to show all or only uncompleted assignments
+    function setupAssignmentSlider() {
+        const button = document.getElementById("slider-status");
+        if (!button) return;
+    
+        button.addEventListener("click", () => {
+    
+            // Toggle the visual slider
+            button.classList.toggle("active");
+    
+            // If active → show ALL
+            const showAll = button.classList.contains("active");
+    
+            filterAssignments(showAll);
+        });
+    }
     function setupAssignmentSlider() {
         const button = document.getElementById("slider-status");
         if (!button) return;
