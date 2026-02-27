@@ -23,9 +23,37 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     // //Slider buton to show all or only uncompleted assignments
-    // function sliderViewAssignments("#slider-status"){
-    //     button.addEventListener()
-    // }
+    function setupAssignmentSlider() {
+        const button = document.getElementById("slider-status");
+        if (!button) return;
+    
+        button.addEventListener("click", () => {
+    
+            // Toggle the visual slider
+            button.classList.toggle("active");
+    
+            // If active → show ALL
+            const showAll = button.classList.contains("active");
+    
+            filterAssignments(showAll);
+        });
+    }
+    function filterAssignments(showAll) {
+
+        if (!window.lastFetchedData) return;
+    
+        // Deep clone so we don't mutate original
+        const data = JSON.parse(JSON.stringify(window.lastFetchedData));
+    
+        if (!showAll) {
+            // Only show incomplete assignments
+            data.overdue = data.overdue.filter(a => !a.isFinished);
+            data.upcoming = data.upcoming.filter(a => !a.isFinished);
+            data.undated = data.undated.filter(a => !a.isFinished);
+        }
+    
+        window.renderDashboard(data);
+    }
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {
       const button = item.querySelector(".myButton");
@@ -233,3 +261,5 @@ function removeDuplicates(tasks) {
 
 buildProgressRings(); // Initial empty rings
 // });
+initDashboard();
+setupAssignmentSlider();

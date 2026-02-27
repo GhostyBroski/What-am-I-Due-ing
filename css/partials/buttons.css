@@ -147,11 +147,13 @@
     text-decoration: line-through;
 }
 #assignments-shown-slider {
+    grid-template-columns: center;
     width: 30px;
     height: 20px;
     background-color: #ccc;
     border-radius: 50px;
     position: relative;
+    overflow: hidden;
 }
 
 #slider-status {
@@ -166,6 +168,6 @@
     transition: 0.3s;
     cursor: pointer;
 }
-#slider-status.active{
+#slider-status.active {
     left: 9px;
 }
