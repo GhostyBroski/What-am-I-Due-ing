@@ -221,14 +221,15 @@ function buildProgressRings(tasks) {
         svg.appendChild(makeCircle({
             r: radius,
             stroke: color,
-            percent
+            percent,
+            className: "progress-ring"
         }));
 
         radius += thickness + gap;
     });
 }
 
-function makeCircle({ r, stroke, percent = 1 }) {
+function makeCircle({ r, stroke, percent = 1, className }) {
     const circle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
@@ -244,6 +245,9 @@ function makeCircle({ r, stroke, percent = 1 }) {
     circle.style.transform = "rotate(-90deg)";
     circle.style.transformOrigin = "50% 50%";
 
+    if (className) {
+        circle.setAttribute("class", className);
+    }
     if (percent < 1) {
         const circumference = 2 * Math.PI * r;
         circle.style.strokeDasharray = circumference;

@@ -1,0 +1,7 @@
+.progress-ring {
+    transition: filter 0.2s ease;
+}
+
+.progress-ring:hover {
+    filter: brightness(0.85);
+}
