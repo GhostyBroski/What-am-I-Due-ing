@@ -22,49 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(url, "_blank");
       });
     });
-    //Slider buton to show all or only uncompleted assignments
-    function sliderViewAssignments() {
-        const button = document.getElementById("slider-status");
-        if (!button) return;
-    
-        button.addEventListener("click", () => {
-            // 1. Move the slider visually
-            button.classList.toggle("active");
-            
-            // 2. Check the new state
-            const showPendingOnly = button.classList.contains("active");
-            
-            // 3. Filter the list
-            filterAssignments(showPendingOnly);
-        });
-    }
-    
-    function filterAssignments(showPendingOnly) {
-        // Select all the rendered assignment items
-        const assignments = document.querySelectorAll(".todo-item");
-    
-        assignments.forEach(item => {
-            // We check two things: 
-            // 1. Does it have the CSS class 'completed' (manually toggled)
-            // 2. Does it have the 'isFinished' state from Canvas
-            const isManualDone = item.classList.contains("completed");
-            
-            // If your template stores the Canvas status in a data attribute:
-            const isCanvasDone = item.getAttribute("status") === "submitted";
-    
-            if (showPendingOnly) {
-                // If the user wants pending only, hide if it's done in either way
-                if (isManualDone || isCanvasDone) {
-                    item.style.display = "none";
-                } else {
-                    item.style.display = "grid"; // or 'block' depending on your CSS
-                }
-            } else {
-                // Show everything
-                item.style.display = "grid";
-            }
-        });
-    }
+    // //Slider buton to show all or only uncompleted assignments
+    // function sliderViewAssignments("#slider-status"){
+    //     button.addEventListener()
+    // }
+    // Complete Button
+    document.querySelectorAll(".todo-item").forEach(item => {
+      const button = item.querySelector(".myButton");
+      if (!button) return;
+  
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        item.classList.toggle("completed");
+      });
+    });
   
     // Create tooltips
     fullNamehover();   // ← ADD THIS LINE
@@ -172,37 +143,31 @@ leftBar.addEventListener("click", () => {
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
+
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
 
-    const courses = Object.entries(groupByCourse(tasks));
+    const grouped = groupByCourse(tasks);
+
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
     const center = 70;
-    const thickness = 8;
-    const gap = 6;
-    let radius = 60;
+    const maxRadius = 65;
+    const minRadius = 15;
+    const availableSpace = maxRadius - minRadius;
+    const thickness = availableSpace / courses.length * 0.8;
+    const gap = availableSpace / courses.length * 0.2;
 
-    const palette = [
-        "#4a90e2",
-        "#50e3c2",
-        "#f5a623",
-        "#bd10e0",
-        "#7ed321",
-        "#d0021b",
-        "#417505",
-        "#9013fe",
-        "#b8e986",
-        "#f8e71c"
-    ];
+    let radius = minRadius;
 
-    courses.forEach(([course, courseTasks], index) => {
-        const color = palette[index % palette.length];
-        if (radius <= 10) return; // avoid overlap
+    courses.forEach(([courseId, courseTasks], index) => {
 
         const total = courseTasks.length;
-        const completed = courseTasks.filter(t => t.completed).length;
+        const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
+        const hue = (index *360) / courses.length;
+        const color = `hsl(${hue}, 70%, 50%)`;
         // Background ring
         svg.appendChild(makeCircle({
             r: radius,
@@ -216,7 +181,7 @@ function buildProgressRings(tasks) {
             percent
         }));
 
-        radius -= thickness + gap;
+        radius += thickness + gap;
     });
 }
 
@@ -245,28 +210,11 @@ function makeCircle({ r, stroke, percent = 1 }) {
     return circle;
 }
 
-// function colorForCourse(course) {
-    
-
-//     // let hash = 0;
-//     // for (let char of course) {
-//     //     hash = (hash + char.charCodeAt(0)) % palette.length;
-//     // }
-
-//     // return palette[hash];
-//     courses.forEach(([course, courseTasks], index) => {
-//         const color = palette[index % palette.length];
-//         courseColors[course] = color;
-//     });
-// }
-
-
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
-        const name = task.course_name || task.course || "Unknown";
-        acc[name] ??= [];
-        acc[name].push(task);
+        acc[task.course_id] ??= [];
+        acc[task.course_id].push(task);
         return acc;
     }, {});
 }
