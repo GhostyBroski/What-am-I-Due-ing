@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     // Class Tag Redirects
-    const classTags = document.querySelectorAll(".class-tag");
+
     // const classLinks = [
     //   "https://byui.instructure.com/courses/310",
     //   "https://byui.instructure.com/courses/212",
@@ -15,12 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     })});
     
-  
+    const classTags = document.querySelectorAll(".class-tag");
+
     classTags.forEach((tag, index) => {
-      tag.addEventListener("click", () => {
-        const url = classLinks[index] || "https://byui.instructure.com/";
-        window.open(url, "_blank");
-      });
+        tag.addEventListener("click", () => {
+            const url = classLinks[index] || "https://byui.instructure.com/";
+            window.open(url, "_blank");
+        });
     });
     // //Slider buton to show all or only uncompleted assignments
     function setupAssignmentSlider() {
