@@ -194,7 +194,6 @@ function buildProgressRings(tasks) {
 
     const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
-    const center = 70;
     const maxRadius = 65;
     const minRadius = 15;
     const availableSpace = maxRadius - minRadius;
@@ -203,7 +202,7 @@ function buildProgressRings(tasks) {
 
     let radius = minRadius;
 
-    courses.forEach(([courseId, courseTasks], index) => {
+    courses.forEach(([, courseTasks], index) => {
 
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
