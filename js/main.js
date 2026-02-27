@@ -240,6 +240,7 @@ function makeCircle({ r, stroke, percent = 1 }) {
     circle.setAttribute("fill", "none");
     circle.setAttribute("stroke", stroke);
     circle.setAttribute("stroke-width", 8);
+    circle.setAttribute("stroke-linecap", "round");
     circle.style.transform = "rotate(-90deg)";
     circle.style.transformOrigin = "50% 50%";
 
