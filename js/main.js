@@ -23,19 +23,48 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     //Slider buton to show all or only uncompleted assignments
-    function sliderViewAssignments("#slider-status"){
-        button.addEventListener()
+    function sliderViewAssignments() {
+        const button = document.getElementById("slider-status");
+        if (!button) return;
+    
+        button.addEventListener("click", () => {
+            // 1. Move the slider visually
+            button.classList.toggle("active");
+            
+            // 2. Check the new state
+            const showPendingOnly = button.classList.contains("active");
+            
+            // 3. Filter the list
+            filterAssignments(showPendingOnly);
+        });
     }
-    // Complete Button
-    document.querySelectorAll(".todo-item").forEach(item => {
-      const button = item.querySelector(".myButton");
-      if (!button) return;
-  
-      button.addEventListener("click", (e) => {
-        e.stopPropagation();
-        item.classList.toggle("completed");
-      });
-    });
+    
+    function filterAssignments(showPendingOnly) {
+        // Select all the rendered assignment items
+        const assignments = document.querySelectorAll(".todo-item");
+    
+        assignments.forEach(item => {
+            // We check two things: 
+            // 1. Does it have the CSS class 'completed' (manually toggled)
+            // 2. Does it have the 'isFinished' state from Canvas
+            const isManualDone = item.classList.contains("completed");
+            
+            // If your template stores the Canvas status in a data attribute:
+            const isCanvasDone = item.getAttribute("status") === "submitted";
+    
+            if (showPendingOnly) {
+                // If the user wants pending only, hide if it's done in either way
+                if (isManualDone || isCanvasDone) {
+                    item.style.display = "none";
+                } else {
+                    item.style.display = "grid"; // or 'block' depending on your CSS
+                }
+            } else {
+                // Show everything
+                item.style.display = "grid";
+            }
+        });
+    }
   
     // Create tooltips
     fullNamehover();   // ← ADD THIS LINE
