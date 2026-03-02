@@ -131,7 +131,7 @@ function render_headings(){
     const base = headings[centerKey];
     titleEl.textContent = base.heading;
     rightBar.textContent = headings[rightKey].icon;
-    leftBar.textContent = headings[leftKey].icon;
+    leftBar.textContent = "HOLAAAA";
 }
 
 rightBar.addEventListener("click", () => {
@@ -139,7 +139,13 @@ rightBar.addEventListener("click", () => {
     render_headings();
 });
 
-render_headings();
+
+
+function render_headings2(){
+    const leftBar = document.querySelector(".left-assign");
+    leftBar.textContent = "HOLAAAA";
+}
+render_headings2();
 
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
