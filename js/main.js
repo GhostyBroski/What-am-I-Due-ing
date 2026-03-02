@@ -139,6 +139,8 @@ rightBar.addEventListener("click", () => {
     render_headings();
 });
 
+render_headings();
+
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
     render_headings();
