@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+    initDashboard();
+    setupAssignmentSlider();  // ← call it here, after DOM is ready
+    fullNamehover();
 
     // Class Tag Redirects
 
@@ -23,53 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
             window.open(url, "_blank");
         });
     });
-    // //Slider buton to show all or only uncompleted assignments
-    function setupAssignmentSlider() {
-        const button = document.getElementById("slider-status");
-        if (!button) return;
-    
-        button.addEventListener("click", () => {
-    
-            // Toggle the visual slider
-            button.classList.toggle("active");
-    
-            // If active → show ALL
-            const showAll = button.classList.contains("active");
-    
-            filterAssignments(showAll);
-        });
-    }
-    function setupAssignmentSlider() {
-        const button = document.getElementById("slider-status");
-        if (!button) return;
-    
-        button.addEventListener("click", () => {
-    
-            // Toggle the visual slider
-            button.classList.toggle("active");
-    
-            // If active → show ALL
-            const showAll = button.classList.contains("active");
-    
-            filterAssignments(showAll);
-        });
-    }
-    function filterAssignments(showAll) {
-
-        if (!window.lastFetchedData) return;
-    
-        // Deep clone so we don't mutate original
-        const data = JSON.parse(JSON.stringify(window.lastFetchedData));
-    
-        if (!showAll) {
-            // Only show incomplete assignments
-            data.overdue = data.overdue.filter(a => !a.isFinished);
-            data.upcoming = data.upcoming.filter(a => !a.isFinished);
-            data.undated = data.undated.filter(a => !a.isFinished);
-        }
-    
-        window.renderDashboard(data);
-    }
+    render_headings();
+initDashboard();
+fullNamehover(); // ✅ ADDED: re-attach hover after dashboard renders
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {
       const button = item.querySelector(".myButton");
@@ -271,6 +230,64 @@ function removeDuplicates(tasks) {
         seen.add(task.url);
         return true;
     });
+}
+function setupAssignmentSlider() {
+    const sliderTrack = document.getElementById("assignments-shown-slider");
+    const sliderThumb = document.getElementById("slider-status");
+
+    if (!sliderTrack || !sliderThumb) return;
+
+    let showAll = false;
+
+    function applyFilter() {
+        const lists = [
+            document.getElementById("upcoming-list"),
+            document.getElementById("overdue-list"),
+            document.getElementById("undated-list")
+        ];
+
+        lists.forEach(list => {
+            if (!list) return;
+
+            const children = Array.from(list.children);
+            let currentHeader = null;
+            let visibleInGroup = 0;
+
+            children.forEach(el => {
+                if (el.classList.contains("date-header")) {
+                    // Before moving to next header, hide previous if no visible items
+                    if (currentHeader) {
+                        currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+                    }
+                    currentHeader = el;
+                    visibleInGroup = 0;
+
+                } else if (el.classList.contains("todo-item")) {
+                    const isCompleted = el.classList.contains("completed");
+                    const hide = !showAll && isCompleted;
+                    el.style.display = hide ? "none" : "";
+                    if (!hide) visibleInGroup++;
+                }
+            });
+
+            // Handle the last header group
+            if (currentHeader) {
+                currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+            }
+        });
+    }
+
+    sliderTrack.addEventListener("click", () => {
+        showAll = !showAll;
+        sliderThumb.classList.toggle("active", showAll);
+        applyFilter();
+    });
+
+    // Re-run filter when week changes so completed items stay hidden on nav
+    document.getElementById("prev-week")?.addEventListener("click", () => applyFilter());
+    document.getElementById("next-week")?.addEventListener("click", () => applyFilter());
+
+    applyFilter(); 
 }
 
 
