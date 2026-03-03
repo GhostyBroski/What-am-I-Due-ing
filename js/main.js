@@ -37,6 +37,7 @@ fullNamehover(); // ✅ ADDED: re-attach hover after dashboard renders
       button.addEventListener("click", (e) => {
         e.stopPropagation();
         item.classList.toggle("completed");
+        button.classList.toggle("completed");
       });
     });
   
