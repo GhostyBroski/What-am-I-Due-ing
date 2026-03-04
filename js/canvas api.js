@@ -1,7 +1,6 @@
 const config = {
     domain: 'byui.instructure.com',
-    token: '', 
-// ← REPLACE THIS WITH YOUR TOKEN
+    token: '', // ← REPLACE THIS WITH YOUR TOKEN
 
     // SETTINGS: Change these to filter your results
     settings: {
@@ -111,12 +110,18 @@ async function initDashboard() {
 async function fetchCanvasDashboard() {
     const { domain, token, settings } = config;
 
+    // Use headers for the token to bypass CORS and follow modern API standards
+    const requestHeaders = {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+    };
+
     try {
         console.log("🚀 Starting Data-Rich Dashboard...");
         
         // 1. FETCH & LOG COURSES
-        const courseUrl = `https://${domain}/api/v1/users/self/courses?access_token=${token}&per_page=100&enrollment_state[]=active&include[]=term`;
-        const cResponse = await fetch(courseUrl);
+        const courseUrl = `https://${domain}/api/v1/users/self/courses?per_page=100&enrollment_state[]=active&include[]=term`;
+        const cResponse = await fetch(courseUrl, { headers: requestHeaders });
         const allCourses = await cResponse.json();
 
         const now = new Date();
@@ -150,8 +155,8 @@ async function fetchCanvasDashboard() {
             console.log(`🔎 Scanning assignments for: ${course.name}`);
 
             const [allRes, uRes] = await Promise.all([
-                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&per_page=100&include[]=submission&include[]=planner_overrides&order_by=due_at`),
-                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?access_token=${token}&bucket=undated&include[]=submission&include[]=planner_overrides`)
+                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?per_page=100&include[]=submission&include[]=planner_overrides&order_by=due_at`, { headers: requestHeaders }),
+                fetch(`https://${domain}/api/v1/courses/${course.id}/assignments?bucket=undated&include[]=submission&include[]=planner_overrides`, { headers: requestHeaders })
             ]);
 
             const courseAssignments = await allRes.json();
@@ -162,10 +167,9 @@ async function fetchCanvasDashboard() {
                 const status = asm.submission ? asm.submission.workflow_state : 'unsubmitted';
                 
                 const isFinished = isMarkedDone || status === 'submitted' || status === 'graded';
-                // if (isFinished || status === 'graded' || status === 'submitted') return null; // Skip if Canvas considers it done
 
                 return {
-                    course_id: asm.course_id, // Captured for rendering logic
+                    course_id: asm.course_id,
                     course_name: course.name,
                     course_code: course.course_code,
                     name: asm.name,
@@ -173,7 +177,7 @@ async function fetchCanvasDashboard() {
                     due_display: asm.due_at ? new Date(asm.due_at).toLocaleString() : "No Due Date",
                     rawDate: asm.due_at ? asm.due_at : null,
                     link: asm.html_url,
-                    assignment_id: asm.id, // Useful for unique keys in React/Vue
+                    assignment_id: asm.id,
                     isFinished: isFinished
                 };
             };
@@ -185,10 +189,8 @@ async function fetchCanvasDashboard() {
 
                     const now = new Date();
 
-                    // If it has a date, it goes into the main list
                     if (item.rawDate) {
                         const d = new Date(item.rawDate);
-                        // Check if it's overdue (past now AND unsubmitted)
                         const isOverdue = d < now;
                         if (isOverdue) {
                             overdueList.push(item);
@@ -196,13 +198,11 @@ async function fetchCanvasDashboard() {
                             upcomingList.push(item);
                         }
                     } else if (item.points > 0) {
-                        // Point-bearing undated items go to upcoming
                         upcomingList.push(item);
                     }
                 });
             }
 
-            // Process Undated
             if (Array.isArray(undatedAsns)) {
                 undatedAsns.forEach(asm => {
                     const item = processItem(asm);
@@ -211,19 +211,50 @@ async function fetchCanvasDashboard() {
             }
         }
 
-        // Deduplicate
+        // 3. FETCH ANNOUNCEMENTS (New Addition)
+        console.log("📢 Fetching Full Semester Announcements...");
+        const contextCodes = activeCourses.map(c => `context_codes[]=course_${c.id}`).join('&');
+        
+        // Match your SEMESTER_START from templates.js
+        const semesterStart = "2026-01-05T00:00:00Z"; 
+        // Set end date to far in the future to capture everything
+        const semesterEnd = "2026-05-01T23:59:59Z"; 
+
+        const announcementsUrl = `https://${domain}/api/v1/announcements?${contextCodes}&start_date=${semesterStart}&end_date=${semesterEnd}`;
+        
+        const aResponse = await fetch(announcementsUrl, { headers: requestHeaders });
+        const rawAnnouncements = await aResponse.json();
+
+        const announcementsList = Array.isArray(rawAnnouncements) ? rawAnnouncements.map(ann => ({
+            id: ann.id,
+            course_id: parseInt(ann.context_code.split('_')[1]),
+            title: ann.title,
+            message: ann.message,
+            posted_at: ann.posted_at,
+            author: ann.author?.display_name || "Instructor",
+            link: ann.html_url,
+            read_state: ann.read_state
+        })) : [];
+
+        // Log the results with the new "all-time" context
+        if (announcementsList.length > 0) {
+            const unreadCount = announcementsList.filter(a => a.read_state === 'unread').length;
+            console.log(`📢 --- ALL SEMESTER ANNOUNCEMENTS (${announcementsList.length} total, ${unreadCount} unread) ---`);
+            const annColumns = ["course_id", "title", "author", "posted_at", "read_state"];
+            console.table(announcementsList, annColumns);
+        }
+
+        // 4. DEDUPLICATE & SORT
         const uniqueUndated = Array.from(new Set(undatedList.map(a => a.link)))
             .map(link => undatedList.find(a => a.link === link));
         
-        // Sorts
-        overdueList.sort((a, b) => a.rawDate - b.rawDate);
-        upcomingList.sort((a, b) => a.rawDate - b.rawDate);
+        overdueList.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+        upcomingList.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
 
-        // 3. FINAL OUTPUT
+        // 5. FINAL OUTPUT & LOGGING
         console.log("✅ Update Complete");
-        
-        // Define visible columns for console.table
         const columns = ["course_id", "course_name", "name", "due_display", "points"];
+        const annColumns = ["course_id", "title", "author", "posted_at", "read_state"];
 
         if (overdueList.length > 0) {
             console.log("⚠️ --- OVERDUE ---");
@@ -240,19 +271,20 @@ async function fetchCanvasDashboard() {
             console.table(uniqueUndated, columns);
         }
 
-
         const dashboardData = {
             courses: activeCourses,
             overdue: overdueList,
             upcoming: upcomingList,
-            undated: uniqueUndated
+            undated: uniqueUndated,
+            announcements: announcementsList
         };
 
         console.log("💾 Saving to Storage:", {
             courses: dashboardData.courses.length,
             overdue: dashboardData.overdue.length,
             upcoming: dashboardData.upcoming.length,
-            undated: dashboardData.undated.length
+            undated: dashboardData.undated.length,
+            announcements: dashboardData.announcements.length
         });
 
         await chrome.storage.local.set({ "cachedDashboard": dashboardData });

@@ -18,48 +18,74 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     })});
     
-    const classTags = document.querySelectorAll(".class-tag");
 
     classTags.forEach((tag, index) => {
         tag.addEventListener("click", () => {
-            const url = classLinks[index] || "https://byui.instructure.com/";
-            window.open(url, "_blank");
+        const url = classLinks[index] || "https://byui.instructure.com/";
+        window.open(url, "_blank");
         });
     });
-    render_headings();
-initDashboard();
-fullNamehover(); // ✅ ADDED: re-attach hover after dashboard renders
+    //Slider buton to show all or only uncompleted assignments
+    // function sliderViewAssignments("#slider-status"){
+    //     button.addEventListener()
+    // }
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {
-      const button = item.querySelector(".myButton");
-      if (!button) return;
-  
-      button.addEventListener("click", (e) => {
+        const button = item.querySelector(".myButton");
+        if (!button) return;
+
+        button.addEventListener("click", (e) => {
         e.stopPropagation();
         item.classList.toggle("completed");
-        button.classList.toggle("completed");
-      });
+        });
     });
-  
+
     // Create tooltips
     fullNamehover();   // ← ADD THIS LINE
-  
+
     function fullNamehover() {
-      document.querySelectorAll(".class-tag").forEach(tag => {
-        if (tag.querySelector(".course-tooltip")) return;
-  
+    //     document.querySelectorAll(".class-tag").forEach(tag => {
+    //         if (tag.querySelector(".course-tooltip")) return;
+
+    //     const fullName = tag.dataset.fullName;
+    //     if (!fullName) return;
+
+    //     const tooltip = document.createElement("div");
+    //     tooltip.className = "course-tooltip";
+    //     tooltip.textContent = fullName;
+
+    //     tag.appendChild(tooltip);
+    //     // document.body.appendChild(tooltip);
+    // });
+
+        document.querySelectorAll(".class-tag").forEach(tag => {
+
         const fullName = tag.dataset.fullName;
         if (!fullName) return;
-  
-        const tooltip = document.createElement("div");
-        tooltip.className = "course-tooltip";
-        tooltip.textContent = fullName;
-  
-        tag.appendChild(tooltip);
-        
-      });
+
+        let tooltip;
+
+        tag.addEventListener("mouseenter", () => {
+            tooltip = document.createElement("div");
+            tooltip.className = "course-tooltip";
+            tooltip.textContent = fullName;
+
+            document.body.appendChild(tooltip);
+
+            const rect = tag.getBoundingClientRect();
+
+            tooltip.style.position = "absolute";
+            tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+        });
+
+        tag.addEventListener("mouseleave", () => {
+            if (tooltip) tooltip.remove();
+        });
+    });
+
     }
-  
+
 const headings = {
     "assignments": {
         "heading": "Assignments",
@@ -91,7 +117,7 @@ function render_headings(){
     const base = headings[centerKey];
     titleEl.textContent = base.heading;
     rightBar.textContent = headings[rightKey].icon;
-    leftBar.textContent = "HOLAAAA";
+    leftBar.textContent = headings[leftKey].icon;
 }
 
 rightBar.addEventListener("click", () => {
@@ -99,19 +125,12 @@ rightBar.addEventListener("click", () => {
     render_headings();
 });
 
-
-
-function render_headings2(){
-    const leftBar = document.querySelector(".left-assign");
-    leftBar.textContent = "HOLAAAA";
-}
-render_headings2();
-
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
     render_headings();
 });
 
+render_headings();
 
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
@@ -227,17 +246,6 @@ function groupByCourse(tasks) {
     }, {});
 }
 
-
-// Remove duplicate tasks based on URL
-function removeDuplicates(tasks) {
-    const seen = new Set();
-    return tasks.filter(task => {
-        if (!task.url) return false; // Skip tasks without a URL
-        if (seen.has(task.url)) return false;
-        seen.add(task.url);
-        return true;
-    });
-}
 function setupAssignmentSlider() {
     const sliderTrack = document.getElementById("assignments-shown-slider");
     const sliderThumb = document.getElementById("slider-status");

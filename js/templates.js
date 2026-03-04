@@ -48,13 +48,12 @@ function renderDashboard(data) {
     const loader = document.getElementById("loading-status");
     if (loader) loader.style.display = "none";
 
-    const range = getRangeForWeek(window.currentViewWeek);
-
     // 2. Clear current lists
     const containers = {
         overdue: document.getElementById("overdue-list"),
         upcoming: document.getElementById("upcoming-list"),
-        undated: document.getElementById("undated-list")
+        undated: document.getElementById("undated-list"),
+        announcements: document.getElementById("announcements-list")
     };
 
     Object.values(containers).forEach(c => { if(c) c.innerHTML = ""; });
@@ -67,6 +66,9 @@ function renderDashboard(data) {
     const allDated = [...data.overdue, ...data.upcoming];
     renderSection(allDated, containers.upcoming, "");
     
+    if (data.announcements && containers.announcements) {
+        renderAnnouncements(data.announcements, containers.announcements);
+    }
 
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
@@ -78,6 +80,39 @@ function renderDashboard(data) {
     if (typeof fullNamehover === "function") {
         fullNamehover();
     }
+}
+
+async function renderAnnouncements(list, container) {
+    if (!container) return;
+    const storage = await chrome.storage.local.get("readAnnouncementIds");
+    const readIds = storage.readAnnouncementIds || [];
+
+    const sorted = [...list].sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at));
+
+    sorted.forEach(ann => {
+        const isRead = readIds.includes(ann.id) || ann.read_state === 'read';
+        const section = document.createElement("section");
+        section.className = `todo-item announcement ${isRead ? 'completed' : ''}`;
+        
+        const dateStr = new Date(ann.posted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+        section.innerHTML = `
+            <button class="myButton"></button>
+            <h1>${ann.title}</h1>
+            <p>${ann.author} | ${dateStr}</p>
+        `;
+
+        section.addEventListener("click", () => window.open(ann.link, "_blank"));
+
+        const btn = section.querySelector(".myButton");
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const nowRead = section.classList.toggle("completed");
+            await toggleSavedCompletion(ann.id, nowRead, 'announcement');
+        });
+
+        container.appendChild(section);
+    });
 }
 
 async function renderSection(list, container, extraClass) {
@@ -160,7 +195,7 @@ async function renderSection(list, container, extraClass) {
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
             const nowCompleted = item.classList.toggle("completed");
-            btn.classList.toggle("completed", nowCompleted); // ← syncs button state
+            btn.classList.toggle("completed", nowCompleted);
             await toggleSavedCompletion(task.assignment_id, nowCompleted);
         });
 
@@ -178,17 +213,41 @@ async function renderSection(list, container, extraClass) {
 }
 
 // Helper to save to Chrome Storage
-async function toggleSavedCompletion(id, isAdding) {
-    const data = await chrome.storage.local.get("completedIds");
-    let ids = data.completedIds || [];
-
+async function toggleSavedCompletion(id, isAdding, type = 'assignment') {
+    const storageKey = type === 'announcement' ? "readAnnouncementIds" : "completedIds";
+    const data = await chrome.storage.local.get([storageKey, "cachedDashboard"]);
+    
+    let ids = data[storageKey] || [];
     if (isAdding) {
         if (!ids.includes(id)) ids.push(id);
     } else {
         ids = ids.filter(existingId => existingId !== id);
     }
+    
+    await chrome.storage.local.set({ [storageKey]: ids });
 
-    await chrome.storage.local.set({ "completedIds": ids });
+    // Patch the cache so Rings and UI stay in sync immediately
+    if (data.cachedDashboard) {
+        const db = data.cachedDashboard;
+        
+        if (type === 'assignment') {
+            const update = (list) => list.map(t => t.assignment_id === id ? { ...t, isFinished: isAdding } : t);
+            db.overdue = update(db.overdue || []);
+            db.upcoming = update(db.upcoming || []);
+            db.undated = update(db.undated || []);
+        } else {
+            db.announcements = (db.announcements || []).map(a => 
+                a.id === id ? { ...a, read_state: isAdding ? 'read' : 'unread' } : a
+            );
+        }
+
+        await chrome.storage.local.set({ "cachedDashboard": db });
+        
+        // Update rings if it was an assignment
+        if (type === 'assignment' && typeof buildProgressRings === "function") {
+            buildProgressRings([...db.overdue, ...db.upcoming, ...db.undated]);
+        }
+    }
 }
 
 function renderCourseList(courses, fullData) {
