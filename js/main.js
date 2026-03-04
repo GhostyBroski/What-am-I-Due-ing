@@ -227,17 +227,6 @@ function groupByCourse(tasks) {
     }, {});
 }
 
-
-// Remove duplicate tasks based on URL
-function removeDuplicates(tasks) {
-    const seen = new Set();
-    return tasks.filter(task => {
-        if (!task.url) return false; // Skip tasks without a URL
-        if (seen.has(task.url)) return false;
-        seen.add(task.url);
-        return true;
-    });
-}
 function setupAssignmentSlider() {
     const sliderTrack = document.getElementById("assignments-shown-slider");
     const sliderThumb = document.getElementById("slider-status");
