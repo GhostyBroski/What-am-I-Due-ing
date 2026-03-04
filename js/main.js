@@ -134,12 +134,12 @@ function render_headings(){
     leftBar.textContent = headings[leftKey].icon;
 }
 
+render_headings();
+
 rightBar.addEventListener("click", () => {
     center = (center + 1) % 3;
     render_headings();
 });
-
-render_headings();
 
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
