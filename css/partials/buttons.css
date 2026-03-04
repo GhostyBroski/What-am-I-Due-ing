@@ -26,6 +26,7 @@
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     text-align: center;
+    align-self: center;
 }
 
 .class-tag:hover {
@@ -40,22 +41,22 @@
     text-align: center;
 }
 
-.class-tag p {
+/* .class-tag p {
     font-size: 0.75rem;
     color: #666;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: 5px;
-}
+} */
 
 /* Tooltip */
 
-.class-tag .course-tooltip {
+/* div .course-tooltip {
     position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 10%;
+    left: 110%;
+
     visibility: hidden;
     opacity: 0;
 
@@ -69,26 +70,44 @@
     font-weight: 500;
 
     pointer-events: none;
-    z-index: 10000;
+    z-index: 1;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transition: opacity 0.3s ease;
+} */
+
+.course-tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1;
+
+    margin-left: 20%;
+    margin-top: -7%;
 }
 
-.class-tag .course-tooltip::after {
+/* div .course-tooltip::after {
     content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute; */
+
+    /* top: 100%; */
+    /* left: 50%; */
+    /* transform: translateX(30%); */
+    /* z-index: 1;
+
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
     border-top: 6px solid #333;
-}
+} */
 
-.class-tag:hover .course-tooltip {
+/* div:hover .course-tooltip {
     visibility: visible;
     opacity: 1;
-}
+    z-index: 1;
+} */
 
 /* ======================
    Todo Item

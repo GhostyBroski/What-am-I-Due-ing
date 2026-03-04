@@ -15,47 +15,74 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     })});
     
-  
+
     classTags.forEach((tag, index) => {
-      tag.addEventListener("click", () => {
+        tag.addEventListener("click", () => {
         const url = classLinks[index] || "https://byui.instructure.com/";
         window.open(url, "_blank");
-      });
+        });
     });
     //Slider buton to show all or only uncompleted assignments
-    function sliderViewAssignments("#slider-status"){
-        button.addEventListener()
-    }
+    // function sliderViewAssignments("#slider-status"){
+    //     button.addEventListener()
+    // }
     // Complete Button
     document.querySelectorAll(".todo-item").forEach(item => {
-      const button = item.querySelector(".myButton");
-      if (!button) return;
-  
-      button.addEventListener("click", (e) => {
+        const button = item.querySelector(".myButton");
+        if (!button) return;
+
+        button.addEventListener("click", (e) => {
         e.stopPropagation();
         item.classList.toggle("completed");
-      });
+        });
     });
-  
+
     // Create tooltips
     fullNamehover();   // ← ADD THIS LINE
-  
+
     function fullNamehover() {
-      document.querySelectorAll(".class-tag").forEach(tag => {
-        if (tag.querySelector(".course-tooltip")) return;
-  
+    //     document.querySelectorAll(".class-tag").forEach(tag => {
+    //         if (tag.querySelector(".course-tooltip")) return;
+
+    //     const fullName = tag.dataset.fullName;
+    //     if (!fullName) return;
+
+    //     const tooltip = document.createElement("div");
+    //     tooltip.className = "course-tooltip";
+    //     tooltip.textContent = fullName;
+
+    //     tag.appendChild(tooltip);
+    //     // document.body.appendChild(tooltip);
+    // });
+
+        document.querySelectorAll(".class-tag").forEach(tag => {
+
         const fullName = tag.dataset.fullName;
         if (!fullName) return;
-  
-        const tooltip = document.createElement("div");
-        tooltip.className = "course-tooltip";
-        tooltip.textContent = fullName;
-  
-        tag.appendChild(tooltip);
-        
-      });
+
+        let tooltip;
+
+        tag.addEventListener("mouseenter", () => {
+            tooltip = document.createElement("div");
+            tooltip.className = "course-tooltip";
+            tooltip.textContent = fullName;
+
+            document.body.appendChild(tooltip);
+
+            const rect = tag.getBoundingClientRect();
+
+            tooltip.style.position = "absolute";
+            tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+        });
+
+        tag.addEventListener("mouseleave", () => {
+            if (tooltip) tooltip.remove();
+        });
+    });
+
     }
-  
+
 const headings = {
     "assignments": {
         "heading": "Assignments",
