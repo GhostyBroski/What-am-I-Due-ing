@@ -160,6 +160,7 @@ async function renderSection(list, container, extraClass) {
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
             const nowCompleted = item.classList.toggle("completed");
+            btn.classList.toggle("completed", nowCompleted); // ← syncs button state
             await toggleSavedCompletion(task.assignment_id, nowCompleted);
         });
 
