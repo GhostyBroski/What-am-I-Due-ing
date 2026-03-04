@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
             window.open(url, "_blank");
         });
     });
-    render_headings();
 initDashboard();
 fullNamehover(); // ✅ ADDED: re-attach hover after dashboard renders
     // Complete Button
@@ -91,29 +90,20 @@ function render_headings(){
     const base = headings[centerKey];
     titleEl.textContent = base.heading;
     rightBar.textContent = headings[rightKey].icon;
-    leftBar.textContent = "HOLAAAA";
+    leftBar.textContent = headings[leftKey].icon;
 }
-
-render_headings();
 
 rightBar.addEventListener("click", () => {
     center = (center + 1) % 3;
     render_headings();
 });
 
-
-
-function render_headings2(){
-    const leftBar = document.querySelector(".left-assign");
-    leftBar.textContent = "HOLAAAA";
-}
-render_headings2();
-
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
     render_headings();
 });
 
+render_headings();
 
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
