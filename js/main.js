@@ -94,6 +94,8 @@ function render_headings(){
     leftBar.textContent = "HOLAAAA";
 }
 
+render_headings();
+
 rightBar.addEventListener("click", () => {
     center = (center + 1) % 3;
     render_headings();
