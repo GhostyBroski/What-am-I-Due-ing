@@ -244,7 +244,9 @@ function setupAssignmentSlider() {
 
     if (!sliderTrack || !sliderThumb) return;
 
-    let showAll = false;
+    // Default state: show all assignments
+    let showAll = true;
+    sliderThumb.classList.toggle("active", showAll);
 
     function applyFilter() {
         const lists = [
@@ -262,7 +264,6 @@ function setupAssignmentSlider() {
 
             children.forEach(el => {
                 if (el.classList.contains("date-header")) {
-                    // Before moving to next header, hide previous if no visible items
                     if (currentHeader) {
                         currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
                     }
@@ -277,7 +278,6 @@ function setupAssignmentSlider() {
                 }
             });
 
-            // Handle the last header group
             if (currentHeader) {
                 currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
             }
@@ -290,11 +290,10 @@ function setupAssignmentSlider() {
         applyFilter();
     });
 
-    // Re-run filter when week changes so completed items stay hidden on nav
-    document.getElementById("prev-week")?.addEventListener("click", () => applyFilter());
-    document.getElementById("next-week")?.addEventListener("click", () => applyFilter());
+    document.getElementById("prev-week")?.addEventListener("click", applyFilter);
+    document.getElementById("next-week")?.addEventListener("click", applyFilter);
 
-    applyFilter(); 
+    applyFilter();
 }
 
 
