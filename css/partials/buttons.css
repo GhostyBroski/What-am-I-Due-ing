@@ -167,8 +167,8 @@
 }
 
 .myButton.completed {
-    background-color: green;
-    border-color: green;
+    background-color: #a3b18a;
+    border-color: #a3b18a;
     color: white;
 }
 
@@ -207,10 +207,10 @@
     border: none;
     position: absolute;
     top: 1px;
-    left: 1px;
+    left: 9px;
     transition: 0.3s;
     cursor: pointer;
 }
 #slider-status.active {
-    left: 9px;
+    left: 1px;
 }
