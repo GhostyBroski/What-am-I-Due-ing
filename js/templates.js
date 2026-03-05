@@ -73,7 +73,17 @@ function renderDashboard(data) {
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
         const allTasks = [...data.overdue, ...data.upcoming, ...data.undated];
-        buildProgressRings(allTasks);
+        
+        // Only tasks in the currently viewed week
+        const weeklyTasks = allTasks.filter(task => {
+            if (!task.due_display)
+                return false; // skip undated for the rings, or adjust if you want them
+            const taskWeek = getSemesterWeek(new Date(task.due_display));
+            return taskWeek === currentViewWeek;
+        });
+
+
+        buildProgressRings(weeklyTasks);
     }
 
     // 2. Re-attach the Hover Tooltips
