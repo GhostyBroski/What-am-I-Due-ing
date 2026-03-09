@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // function sliderViewAssignments("#slider-status"){
     //     button.addEventListener()
     // }
-    // // Complete Button Line-through and Check Mark 
+    // Complete Button Line-through and Check Mark 
     // Shows what is completed and gives user ability to check completed
     document.querySelectorAll(".todo-item").forEach(item => {
         const button = item.querySelector(".myButton");
@@ -257,9 +257,7 @@ function setupAssignmentSlider() {
 
     if (!sliderTrack || !sliderThumb) return;
 
-    // Default state: show all assignments
     let showAll = true;
-    sliderThumb.classList.toggle("active", showAll);
 
     function applyFilter() {
         const lists = [
@@ -276,17 +274,24 @@ function setupAssignmentSlider() {
             let visibleInGroup = 0;
 
             children.forEach(el => {
+
                 if (el.classList.contains("date-header")) {
+
                     if (currentHeader) {
                         currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
                     }
+
                     currentHeader = el;
                     visibleInGroup = 0;
 
-                } else if (el.classList.contains("todo-item")) {
+                } 
+                else if (el.classList.contains("todo-item")) {
+
                     const isCompleted = el.classList.contains("completed");
                     const hide = !showAll && isCompleted;
+
                     el.style.display = hide ? "none" : "";
+
                     if (!hide) visibleInGroup++;
                 }
             });
@@ -297,16 +302,37 @@ function setupAssignmentSlider() {
         });
     }
 
-    sliderTrack.addEventListener("click", () => {
-        showAll = !showAll;
+    // Load saved slider state
+    chrome.storage.local.get(["showAllAssignments"], (data) => {
+
+        showAll = data.showAllAssignments ?? true;
+
+        // Set slider position
         sliderThumb.classList.toggle("active", showAll);
+
+        // Apply filter after assignments load
+        setTimeout(() => {
+            applyFilter();
+        }, 200);
+    });
+
+    // Slider toggle
+    sliderTrack.addEventListener("click", () => {
+
+        showAll = !showAll;
+
+        sliderThumb.classList.toggle("active", showAll);
+
+        // Save state
+        chrome.storage.local.set({
+            showAllAssignments: showAll
+        });
+
         applyFilter();
     });
 
     document.getElementById("prev-week")?.addEventListener("click", applyFilter);
     document.getElementById("next-week")?.addEventListener("click", applyFilter);
-
-    applyFilter();
 }
 
 
