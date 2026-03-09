@@ -166,13 +166,15 @@
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-.myButton.completed {
+/* When assignment is completed */
+.todo-item.completed .myButton {
     background-color: #a3b18a;
-    border-color: #a3b18a;
+    border-color: green;
     color: white;
 }
 
-.myButton.completed::after {
+/* Show checkmark */
+.todo-item.completed .myButton::after {
     content: "✓";
 }
 

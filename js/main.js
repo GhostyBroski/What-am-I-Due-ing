@@ -33,11 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".todo-item").forEach(item => {
         const button = item.querySelector(".myButton");
         if (!button) return;
-        let button = true;
-
+    
         button.addEventListener("click", (e) => {
-        e.stopPropagation();
-        item.classList.toggle("completed");
+            e.stopPropagation();
+    
+            // toggle completed state
+            item.classList.toggle("completed");
+            button.classList.toggle("completed");
         });
     });
 
