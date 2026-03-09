@@ -2,6 +2,9 @@
   "manifest_version": 3,
   "name": "What-Am-I-Due-ing",
   "version": "1.0",
+  "icons": {
+    "192": "images/android-chrome-192x192.png"
+  },
   "permissions": [
     "identity",
     "storage",

@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // function sliderViewAssignments("#slider-status"){
     //     button.addEventListener()
     // }
-    // Complete Button
+    // // Complete Button Line-through and Check Mark 
+    // Shows what is completed and gives user ability to check completed
     document.querySelectorAll(".todo-item").forEach(item => {
         const button = item.querySelector(".myButton");
         if (!button) return;
