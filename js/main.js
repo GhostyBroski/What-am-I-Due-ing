@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     })});
     
+    const classTags = document.querySelectorAll(".class-tag");
 
     classTags.forEach((tag, index) => {
         tag.addEventListener("click", () => {
@@ -63,29 +64,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll(".class-tag").forEach(tag => {
 
-        const fullName = tag.dataset.fullName;
-        if (!fullName) return;
+            const fullName = tag.dataset.fullName;
+            if (!fullName) return;
 
-        let tooltip;
+            let tooltip;
 
-        tag.addEventListener("mouseenter", () => {
-            tooltip = document.createElement("div");
-            tooltip.className = "course-tooltip";
-            tooltip.textContent = fullName;
+            tag.addEventListener("mouseenter", () => {
+                tooltip = document.createElement("div");
+                tooltip.className = "course-tooltip";
+                tooltip.textContent = fullName;
 
-            document.body.appendChild(tooltip);
+                document.body.appendChild(tooltip);
 
-            const rect = tag.getBoundingClientRect();
+                const rect = tag.getBoundingClientRect();
 
-            tooltip.style.position = "absolute";
-            tooltip.style.top = `${rect.bottom + window.scrollY}px`;
-            tooltip.style.left = `${rect.left + window.scrollX}px`;
+                tooltip.style.position = "absolute";
+                tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+                tooltip.style.left = `${rect.left + window.scrollX}px`;
+            });
+
+            tag.addEventListener("mouseleave", () => {
+                if (tooltip) tooltip.remove();
+            });
         });
-
-        tag.addEventListener("mouseleave", () => {
-            if (tooltip) tooltip.remove();
-        });
-    });
 
     }
 
