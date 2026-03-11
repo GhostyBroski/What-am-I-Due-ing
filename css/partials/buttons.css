@@ -21,8 +21,8 @@
     width: 75px;
     padding: 0.25rem;
     border-radius: 999px;
-    background-color: rgb(163, 177, 138);
-    border: 1px solid #ccc;
+    background-color: var(--course-color, rgb(163, 177, 138));
+    border: 1px solid var(--course-color, #ccc);
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     text-align: center;

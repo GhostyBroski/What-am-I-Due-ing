@@ -268,6 +268,7 @@ function renderCourseList(courses, fullData) {
     courses.forEach(course => {
         const tag = document.createElement("section");
         tag.className = "class-tag";
+        tag.dataset.courseId = course.id;
         if (window.selectedCourseId === course.id) tag.classList.add("active");
         
         tag.dataset.fullName = course.name;

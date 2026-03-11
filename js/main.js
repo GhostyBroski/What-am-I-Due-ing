@@ -167,6 +167,7 @@ render_headings();
   // Run the check every 60 seconds
   setInterval(checkMidnight, 60000);
 
+const courseColors = {};
 
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
@@ -187,14 +188,24 @@ function buildProgressRings(tasks) {
 
     let radius = minRadius;
 
-    courses.forEach(([, courseTasks], index) => {
+    courses.forEach(([courseId, courseTasks], index) => {
 
+        
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
         const hue = (index *360) / courses.length;
         const color = `hsl(${hue}, 70%, 50%)`;
+        
+        courseColors[courseId] = color;
+
+        const button = document.querySelector(`.class-tag[data-course-id="${courseId}"]`);
+        if (button) {
+            button.style.setProperty("--course-color", color);
+        }
+
+        
         // Background ring
         svg.appendChild(makeCircle({
             r: radius,
