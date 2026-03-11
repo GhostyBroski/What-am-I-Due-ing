@@ -155,6 +155,30 @@
 }
 
 /* Completed State */
+.myButton {
+    grid-row: 2 / 3;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #777;
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.myButton.completed {
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.myButton.completed::after {
+    content: "✓";
+}
 
 .todo-item.completed {
     opacity: 0.6;
@@ -170,11 +194,13 @@
     text-decoration: line-through;
 }
 #assignments-shown-slider {
+    grid-template-columns: center;
     width: 30px;
     height: 20px;
     background-color: #ccc;
     border-radius: 50px;
     position: relative;
+    overflow: hidden;
 }
 
 #slider-status {
@@ -189,6 +215,6 @@
     transition: 0.3s;
     cursor: pointer;
 }
-#slider-status.active{
+#slider-status.active {
     left: 9px;
 }

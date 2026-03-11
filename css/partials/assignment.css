@@ -41,7 +41,7 @@ main > div:last-child {
 }
 
 /* Checkbox button */
-.todo-item button {
+/* .todo-item button {
     grid-row: 2 / 3;
     width: 20px;
     height: 20px;
@@ -49,7 +49,7 @@ main > div:last-child {
     border: 2px solid #777;
     background: none;
     cursor: pointer;
-}
+} */
 
 /* Course code */
 .todo-item h1 {

@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+    initDashboard();
+    setupAssignmentSlider();  // ← call it here, after DOM is ready
+    fullNamehover();
 
     // Class Tag Redirects
-    // const classTags = document.querySelectorAll(".class-tag");
+
     // const classLinks = [
     //   "https://byui.instructure.com/courses/310",
     //   "https://byui.instructure.com/courses/212",
@@ -114,7 +117,7 @@ function render_headings(){
     const base = headings[centerKey];
     titleEl.textContent = base.heading;
     rightBar.textContent = headings[rightKey].icon;
-    leftBar.textContent = "HOLAAAA";
+    leftBar.textContent = headings[leftKey].icon;
 }
 
 rightBar.addEventListener("click", () => {
@@ -122,19 +125,12 @@ rightBar.addEventListener("click", () => {
     render_headings();
 });
 
-
-
-function render_headings2(){
-    const leftBar = document.querySelector(".left-assign");
-    leftBar.textContent = "HOLAAAA";
-}
-render_headings2();
-
 leftBar.addEventListener("click", () => {
     center = (center + 2) % 3;
     render_headings();
 });
 
+render_headings();
 
 
   // 3. The Midnight Checker (Moved inside so it can access todoItems)
@@ -170,37 +166,30 @@ leftBar.addEventListener("click", () => {
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
+
     const svg = document.getElementById("progressRings");
     svg.innerHTML = "";
 
-    const courses = Object.entries(groupByCourse(tasks));
+    const grouped = groupByCourse(tasks);
 
-    const center = 70;
-    const thickness = 8;
-    const gap = 6;
-    let radius = 60;
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
-    const palette = [
-        "#4a90e2",
-        "#50e3c2",
-        "#f5a623",
-        "#bd10e0",
-        "#7ed321",
-        "#d0021b",
-        "#417505",
-        "#9013fe",
-        "#b8e986",
-        "#f8e71c"
-    ];
+    const maxRadius = 65;
+    const minRadius = 15;
+    const availableSpace = maxRadius - minRadius;
+    const thickness = availableSpace / courses.length * 0.8;
+    const gap = availableSpace / courses.length * 0.2;
 
-    courses.forEach(([course, courseTasks], index) => {
-        const color = palette[index % palette.length];
-        if (radius <= 10) return; // avoid overlap
+    let radius = minRadius;
+
+    courses.forEach(([, courseTasks], index) => {
 
         const total = courseTasks.length;
-        const completed = courseTasks.filter(t => t.completed).length;
+        const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
+        const hue = (index *360) / courses.length;
+        const color = `hsl(${hue}, 70%, 50%)`;
         // Background ring
         svg.appendChild(makeCircle({
             r: radius,
@@ -211,14 +200,15 @@ function buildProgressRings(tasks) {
         svg.appendChild(makeCircle({
             r: radius,
             stroke: color,
-            percent
+            percent,
+            className: "progress-ring"
         }));
 
-        radius -= thickness + gap;
+        radius += thickness + gap;
     });
 }
 
-function makeCircle({ r, stroke, percent = 1 }) {
+function makeCircle({ r, stroke, percent = 1, className }) {
     const circle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
@@ -230,9 +220,13 @@ function makeCircle({ r, stroke, percent = 1 }) {
     circle.setAttribute("fill", "none");
     circle.setAttribute("stroke", stroke);
     circle.setAttribute("stroke-width", 8);
+    circle.setAttribute("stroke-linecap", "round");
     circle.style.transform = "rotate(-90deg)";
     circle.style.transformOrigin = "50% 50%";
 
+    if (className) {
+        circle.setAttribute("class", className);
+    }
     if (percent < 1) {
         const circumference = 2 * Math.PI * r;
         circle.style.strokeDasharray = circumference;
@@ -243,44 +237,76 @@ function makeCircle({ r, stroke, percent = 1 }) {
     return circle;
 }
 
-// function colorForCourse(course) {
-    
-
-//     // let hash = 0;
-//     // for (let char of course) {
-//     //     hash = (hash + char.charCodeAt(0)) % palette.length;
-//     // }
-
-//     // return palette[hash];
-//     courses.forEach(([course, courseTasks], index) => {
-//         const color = palette[index % palette.length];
-//         courseColors[course] = color;
-//     });
-// }
-
-
 
 function groupByCourse(tasks) {
     return tasks.reduce((acc, task) => {
-        const name = task.course_name || task.course || "Unknown";
-        acc[name] ??= [];
-        acc[name].push(task);
+        acc[task.course_id] ??= [];
+        acc[task.course_id].push(task);
         return acc;
     }, {});
 }
 
+function setupAssignmentSlider() {
+    const sliderTrack = document.getElementById("assignments-shown-slider");
+    const sliderThumb = document.getElementById("slider-status");
 
-// Remove duplicate tasks based on URL
-function removeDuplicates(tasks) {
-    const seen = new Set();
-    return tasks.filter(task => {
-        if (!task.url) return false; // Skip tasks without a URL
-        if (seen.has(task.url)) return false;
-        seen.add(task.url);
-        return true;
+    if (!sliderTrack || !sliderThumb) return;
+
+    let showAll = false;
+
+    function applyFilter() {
+        const lists = [
+            document.getElementById("upcoming-list"),
+            document.getElementById("overdue-list"),
+            document.getElementById("undated-list")
+        ];
+
+        lists.forEach(list => {
+            if (!list) return;
+
+            const children = Array.from(list.children);
+            let currentHeader = null;
+            let visibleInGroup = 0;
+
+            children.forEach(el => {
+                if (el.classList.contains("date-header")) {
+                    // Before moving to next header, hide previous if no visible items
+                    if (currentHeader) {
+                        currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+                    }
+                    currentHeader = el;
+                    visibleInGroup = 0;
+
+                } else if (el.classList.contains("todo-item")) {
+                    const isCompleted = el.classList.contains("completed");
+                    const hide = !showAll && isCompleted;
+                    el.style.display = hide ? "none" : "";
+                    if (!hide) visibleInGroup++;
+                }
+            });
+
+            // Handle the last header group
+            if (currentHeader) {
+                currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+            }
+        });
+    }
+
+    sliderTrack.addEventListener("click", () => {
+        showAll = !showAll;
+        sliderThumb.classList.toggle("active", showAll);
+        applyFilter();
     });
+
+    // Re-run filter when week changes so completed items stay hidden on nav
+    document.getElementById("prev-week")?.addEventListener("click", () => applyFilter());
+    document.getElementById("next-week")?.addEventListener("click", () => applyFilter());
+
+    applyFilter(); 
 }
 
 
 buildProgressRings(); // Initial empty rings
 // });
+initDashboard();
+setupAssignmentSlider();
