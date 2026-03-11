@@ -19,6 +19,7 @@
 .class-tag {
     position: relative;
     width: 75px;
+    max-height: 30px;
     padding: 0.25rem;
     border-radius: 999px;
     background-color: var(--course-color, rgb(163, 177, 138));
@@ -26,7 +27,6 @@
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     text-align: center;
-    align-self: center;
 }
 
 .class-tag:hover {
@@ -39,6 +39,10 @@
     font-weight: 600;
     border-radius: 25px;
     text-align: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 /* .class-tag p {
