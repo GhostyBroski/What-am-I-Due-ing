@@ -3,11 +3,7 @@ A browser extension for your To-Do needs!
 **Installation & Setup**
 Clone the Repository: 
 Download the extension files to a local folder.
-**Get your Canvas Token:**
-Log in to BYU-I Canvas.
-Go to Account > Settings.
-Scroll down to Approved Integrations and click + New Access Token.
-Copy the token.
+**Get your Canvas Token:**(Cant tell anyone to do this)
 **Configure the Extension:**
 Open js/canvas api.js.
 Locate the config object and replace the token value with your personal access token.
