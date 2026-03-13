@@ -49,19 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fullNamehover();   // ← ADD THIS LINE
 
     function fullNamehover() {
-    //     document.querySelectorAll(".class-tag").forEach(tag => {
-    //         if (tag.querySelector(".course-tooltip")) return;
-
-    //     const fullName = tag.dataset.fullName;
-    //     if (!fullName) return;
-
-    //     const tooltip = document.createElement("div");
-    //     tooltip.className = "course-tooltip";
-    //     tooltip.textContent = fullName;
-
-    //     tag.appendChild(tooltip);
-    //     // document.body.appendChild(tooltip);
-    // });
 
         document.querySelectorAll(".class-tag").forEach(tag => {
 
