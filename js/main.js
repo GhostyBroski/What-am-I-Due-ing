@@ -132,35 +132,6 @@ leftBar.addEventListener("click", () => {
 render_headings();
 
 
-  // 3. The Midnight Checker (Moved inside so it can access todoItems)
-  function checkMidnight() {
-    const now = new Date();
-    const todoItems = document.querySelectorAll(".todo-item");
-    // Check if it's 00:00 (Midnight)
-    if (now.getHours() === 0 && now.getMinutes() === 0) {
-        console.log("Midnight cleanup triggered...");
-        
-        todoItems.forEach(item => {
-            // Check if the h1 inside this item has the 'completed' class
-            const title = item.querySelector("h1");
-            if (title && title.classList.contains("completed")) {
-                
-                // Visual Fade Out
-                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-                item.style.opacity = "0";
-                item.style.transform = "translateX(20px)";
-                
-                setTimeout(() => {
-                    item.remove();
-                }, 500);
-            }
-        });
-    }
-  }
-
-  // Run the check every 60 seconds
-  setInterval(checkMidnight, 60000);
-
 const courseColors = {};
 
 function buildProgressRings(tasks) {
