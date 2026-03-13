@@ -19,11 +19,6 @@
   },
   "content_scripts": [
   {
-    "matches": ["*://*.instructure.com/*"],
-    "js": ["js/content.js"],
-    "run_at": "document_idle"
-  },
-  {
     "matches": ["<all_urls>"],
     "js": ["js/main.js"],
     "run_at": "document_idle"

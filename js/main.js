@@ -1,160 +1,169 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     initDashboard();
-    setupAssignmentSlider();
+    setupAssignmentSlider();  // ← call it here, after DOM is ready
     fullNamehover();
     buildProgressRings();
 
-    setupClassTags();
-    setupTodoButtons();
-    restoreHeadingView();
-
     chrome.storage.sync.get(["courseTasks"], (data) => {
         const tasks = data.courseTasks || [];
-        tasks.forEach(task => console.log("URL from content.js:", task.url));
-    });
-});
-
-
-
-/* ===============================
-   CLASS TAG REDIRECTS
-================================ */
-
-function setupClassTags() {
-
+    
+        tasks.forEach(task => {
+            console.log("URL from content.js:", task.url);
+        });
+    })});
+    
     const classTags = document.querySelectorAll(".class-tag");
 
     classTags.forEach((tag, index) => {
         tag.addEventListener("click", () => {
-            const url = classLinks[index] || "https://byui.instructure.com/";
-            window.open(url, "_blank");
+        const url = classLinks[index] || "https://byui.instructure.com/";
+        window.open(url, "_blank");
         });
     });
-}
-
-
-
-/* ===============================
-   TODO COMPLETION BUTTONS
-================================ */
-
-function setupTodoButtons() {
-
+    //Slider buton to show all or only uncompleted assignments
+    // function sliderViewAssignments("#slider-status"){
+    //     button.addEventListener()
+    // }
+    // Complete Button Line-through and Check Mark 
+    // Shows what is completed and gives user ability to check completed
     document.querySelectorAll(".todo-item").forEach(item => {
-
         const button = item.querySelector(".myButton");
         if (!button) return;
-
+    
         button.addEventListener("click", (e) => {
             e.stopPropagation();
-
+    
+            // toggle completed state
             item.classList.toggle("completed");
             button.classList.toggle("completed");
         });
     });
-}
 
+    // Create tooltips
+    fullNamehover();   // ← ADD THIS LINE
 
+    function fullNamehover() {
+    //     document.querySelectorAll(".class-tag").forEach(tag => {
+    //         if (tag.querySelector(".course-tooltip")) return;
 
-/* ===============================
-   TOOLTIP HOVER
-================================ */
+    //     const fullName = tag.dataset.fullName;
+    //     if (!fullName) return;
 
-function fullNamehover() {
+    //     const tooltip = document.createElement("div");
+    //     tooltip.className = "course-tooltip";
+    //     tooltip.textContent = fullName;
 
-    document.querySelectorAll(".class-tag").forEach(tag => {
+    //     tag.appendChild(tooltip);
+    //     // document.body.appendChild(tooltip);
+    // });
 
-        const fullName = tag.dataset.fullName;
-        if (!fullName) return;
+        document.querySelectorAll(".class-tag").forEach(tag => {
 
-        let tooltip;
+            const fullName = tag.dataset.fullName;
+            if (!fullName) return;
 
-        tag.addEventListener("mouseenter", () => {
-            tooltip = document.createElement("div");
-            tooltip.className = "course-tooltip";
-            tooltip.textContent = fullName;
+            let tooltip;
 
-            document.body.appendChild(tooltip);
+            tag.addEventListener("mouseenter", () => {
+                tooltip = document.createElement("div");
+                tooltip.className = "course-tooltip";
+                tooltip.textContent = fullName;
 
-            const rect = tag.getBoundingClientRect();
+                document.body.appendChild(tooltip);
 
-            tooltip.style.position = "absolute";
-            tooltip.style.top = `${rect.bottom + window.scrollY}px`;
-            tooltip.style.left = `${rect.left + window.scrollX}px`;
+                const rect = tag.getBoundingClientRect();
+
+                tooltip.style.position = "absolute";
+                tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+                tooltip.style.left = `${rect.left + window.scrollX}px`;
+            });
+
+            tag.addEventListener("mouseleave", () => {
+                if (tooltip) tooltip.remove();
+            });
         });
 
-        tag.addEventListener("mouseleave", () => {
-            if (tooltip) tooltip.remove();
-        });
-    });
-}
-
-
-
-/* ===============================
-   HEADINGS / VIEW STATE
-================================ */
+    }
 
 const headings = {
-    assignments: { heading: "Assignments", icon: "📝" },
-    announcements: { heading: "Announcements", icon: "📢" },
-    calendar: { heading: "Calendar", icon: "📅" }
-};
+    "assignments": {
+        "heading": "Assignments",
+        "icon": "📝"
+    },
+    "announcements": {
+        "heading": "Announcements",
+        "icon": "📢"
+    },
+    "calendar": {
+        "heading": "Calendar",
+        "icon": "📅"
+    }
+}
 
+ // Section for assignment headings and buttons
 const titleEl = document.querySelector(".assign-title");
+const weekEl = document.querySelector(".assign-week");
 const leftBar = document.querySelector(".left-assign");
 const rightBar = document.querySelector(".right-assign");
-
 let order = ["assignments", "announcements", "calendar"];
 let center = 0;
 
-function render_headings() {
-
-    const centerKey = order[center];
+function render_headings(){
+    const centerKey = order[center]
     const rightKey = order[(center + 1) % 3];
     const leftKey = order[(center + 2) % 3];
 
-    titleEl.textContent = headings[centerKey].heading;
+    const base = headings[centerKey];
+    titleEl.textContent = base.heading;
     rightBar.textContent = headings[rightKey].icon;
     leftBar.textContent = headings[leftKey].icon;
 }
 
-function restoreHeadingView() {
-
-    chrome.storage.local.get(["headingCenter"], (data) => {
-
-        center = data.headingCenter ?? 0;
-        render_headings();
-    });
-}
-
 rightBar.addEventListener("click", () => {
-
     center = (center + 1) % 3;
-
-    chrome.storage.local.set({ headingCenter: center });
-
     render_headings();
 });
 
 leftBar.addEventListener("click", () => {
-
     center = (center + 2) % 3;
-
-    chrome.storage.local.set({ headingCenter: center });
-
     render_headings();
 });
 
-/* ===============================
-   PROGRESS RINGS — UNCHANGED
-================================ */
+render_headings();
+
+
+  // 3. The Midnight Checker (Moved inside so it can access todoItems)
+  function checkMidnight() {
+    const now = new Date();
+    const todoItems = document.querySelectorAll(".todo-item");
+    // Check if it's 00:00 (Midnight)
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+        console.log("Midnight cleanup triggered...");
+        
+        todoItems.forEach(item => {
+            // Check if the h1 inside this item has the 'completed' class
+            const title = item.querySelector("h1");
+            if (title && title.classList.contains("completed")) {
+                
+                // Visual Fade Out
+                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                item.style.opacity = "0";
+                item.style.transform = "translateX(20px)";
+                
+                setTimeout(() => {
+                    item.remove();
+                }, 500);
+            }
+        });
+    }
+  }
+
+  // Run the check every 60 seconds
+  setInterval(checkMidnight, 60000);
 
 const courseColors = {};
 
-function buildProgressRings(tasks = []) {
-
+function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
 
@@ -163,8 +172,7 @@ function buildProgressRings(tasks = []) {
 
     const grouped = groupByCourse(tasks);
 
-    const courses = Object.entries(grouped)
-        .sort((a, b) => b[1].length - a[1].length);
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
 
     const maxRadius = 65;
     const minRadius = 15;
@@ -176,25 +184,29 @@ function buildProgressRings(tasks = []) {
 
     courses.forEach(([courseId, courseTasks], index) => {
 
+        
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
-        const hue = (index * 360) / courses.length;
+        const hue = (index *360) / courses.length;
         const color = `hsl(${hue}, 70%, 50%)`;
-
+        
         courseColors[courseId] = color;
 
-        const button = document.querySelector(
-            `.class-tag[data-course-id="${courseId}"]`
-        );
-
+        const button = document.querySelector(`.class-tag[data-course-id="${courseId}"]`);
         if (button) {
             button.style.setProperty("--course-color", color);
         }
 
-        svg.appendChild(makeCircle({ r: radius, stroke: "#eee" }));
+        
+        // Background ring
+        svg.appendChild(makeCircle({
+            r: radius,
+            stroke: "#eee"
+        }));
 
+        // Progress ring
         svg.appendChild(makeCircle({
             r: radius,
             stroke: color,
@@ -207,7 +219,6 @@ function buildProgressRings(tasks = []) {
 }
 
 function makeCircle({ r, stroke, percent = 1, className }) {
-
     const circle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
@@ -220,16 +231,14 @@ function makeCircle({ r, stroke, percent = 1, className }) {
     circle.setAttribute("stroke", stroke);
     circle.setAttribute("stroke-width", 8);
     circle.setAttribute("stroke-linecap", "round");
-
     circle.style.transform = "rotate(-90deg)";
     circle.style.transformOrigin = "50% 50%";
 
-    if (className) circle.setAttribute("class", className);
-
+    if (className) {
+        circle.setAttribute("class", className);
+    }
     if (percent < 1) {
-
         const circumference = 2 * Math.PI * r;
-
         circle.style.strokeDasharray = circumference;
         circle.style.strokeDashoffset =
             circumference * (1 - percent);
@@ -238,23 +247,14 @@ function makeCircle({ r, stroke, percent = 1, className }) {
     return circle;
 }
 
+
 function groupByCourse(tasks) {
-
     return tasks.reduce((acc, task) => {
-
         acc[task.course_id] ??= [];
         acc[task.course_id].push(task);
-
         return acc;
-
     }, {});
 }
-
-
-
-/* ===============================
-   ASSIGNMENT SLIDER
-================================ */
 
 function setupAssignmentSlider() {
 
@@ -342,7 +342,7 @@ function setupAssignmentSlider() {
     });
 
     /* ===============================
-       AUTO-REAPPLY WHEN LIST CHANGES
+     AUTO-REAPPLY WHEN LIST CHANGES
     =============================== */
 
     const lists = [

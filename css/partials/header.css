@@ -43,14 +43,7 @@ header {
     grid-template-columns: 1fr / 1fr / 1fr;
     grid-template-rows: 1fr / 1fr;
 }
-/* .filter-button {
-    border-radius: 50px;
-    width: 10px;
-    height: 10px;
-    align-self: center;
-    justify-self: center;
-} */
-/* Filter Dropdown */
+
 .dropdown-content {
     display: none;
 }
