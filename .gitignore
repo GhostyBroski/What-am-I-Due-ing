@@ -1,74 +1,74 @@
-# Node.js
-node_modules/
-*.lock
-*.npm
-*.yarn
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# # Node.js
+# node_modules/
+# *.lock
+# *.npm
+# *.yarn
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
 
-# Logs
-logs/
-*.log
+# # Logs
+# logs/
+# *.log
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# # OS generated files
+# .DS_Store
+# Thumbs.db
 
-# Environment files
-.env
-.env.*
+# # Environment files
+# .env
+# .env.*
 
-# Build output
-dist/
-build/
-out/
+# # Build output
+# dist/
+# build/
+# out/
 
-# IDEs and editors
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+# # IDEs and editors
+# .vscode/
+# .idea/
+# *.suo
+# *.ntvs*
+# *.njsproj
+# *.sln
 
-# Dependencies
-node_modules/
-*.npm
-package-lock.json
-yarn.lock
+# # Dependencies
+# node_modules/
+# *.npm
+# package-lock.json
+# yarn.lock
 
-# Environment variables
-venv/
-.env/
-.env
-.env.local
-.env.*.local
+# # Environment variables
+# venv/
+# .env/
+# .env
+# .env.local
+# .env.*.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# # IDE
+# .vscode/
+# .idea/
+# *.swp
+# *.swo
+# *~
 
-# Build outputs
-dist/
-build/
-*.log
+# # Build outputs
+# dist/
+# build/
+# *.log
 
-# OS
-Thumbs.db
-.DS_Store
+# # OS
+# Thumbs.db
+# .DS_Store
 
-# Temporary files
-*.tmp
-*.bak
+# # Temporary files
+# *.tmp
+# *.bak
 
-# Assets Exports
-*.psd
-*.kra
+# # Assets Exports
+# *.psd
+# *.kra
 
-# Misc
-coverage/
-*.tgz
+# # Misc
+# coverage/
+# *.tgz
