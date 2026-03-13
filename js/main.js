@@ -142,49 +142,58 @@ function buildProgressRings(tasks) {
     svg.innerHTML = "";
 
     const grouped = groupByCourse(tasks);
-
-    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
 
     const maxRadius = 65;
     const minRadius = 15;
     const availableSpace = maxRadius - minRadius;
-    const thickness = availableSpace / courses.length * 0.8;
-    const gap = availableSpace / courses.length * 0.2;
+    const thickness = (courses.length > 0) ? (availableSpace / courses.length * 0.8) : 8;
+    const gap = (courses.length > 0) ? (availableSpace / courses.length * 0.2) : 2;
 
     let radius = minRadius;
 
     courses.forEach(([courseId, courseTasks], index) => {
-
-        
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
-        const hue = (index *360) / courses.length;
+        const hue = (index * 360) / courses.length;
         const color = `hsl(${hue}, 70%, 50%)`;
         
         courseColors[courseId] = color;
+
+        // Check if we are currently filtering by a specific course
+        // window.selectedCourseId comes from templates.js
+        const isDimmed = window.selectedCourseId && window.selectedCourseId != courseId;
 
         const button = document.querySelector(`.class-tag[data-course-id="${courseId}"]`);
         if (button) {
             button.style.setProperty("--course-color", color);
         }
 
-        
+        // Create a group for the ring pair to handle opacity easily
+        const ringGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        if (isDimmed) {
+            ringGroup.style.opacity = "0.2"; // Greys out/fades the ring
+            ringGroup.style.filter = "grayscale(80%)"; // Optional: adds to the "greyed out" look
+        }
+        ringGroup.style.transition = "opacity 0.3s ease";
+
         // Background ring
-        svg.appendChild(makeCircle({
+        ringGroup.appendChild(makeCircle({
             r: radius,
             stroke: "#eee"
         }));
 
         // Progress ring
-        svg.appendChild(makeCircle({
+        ringGroup.appendChild(makeCircle({
             r: radius,
             stroke: color,
             percent,
             className: "progress-ring"
         }));
 
+        svg.appendChild(ringGroup);
         radius += thickness + gap;
     });
 }
