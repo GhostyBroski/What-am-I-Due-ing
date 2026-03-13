@@ -39,10 +39,16 @@
     font-weight: 600;
     border-radius: 25px;
     text-align: center;
+    color: var(--text-color, black);
+    transition: color 0.2s ease;
 
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.class-tag h1:hover {
+    color: black;
 }
 
 /* .class-tag p {

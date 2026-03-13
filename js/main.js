@@ -169,6 +169,11 @@ render_headings();
 
 const courseColors = {};
 
+function getTextColor(hslString) {
+    const [h, s, l] = hslString.match(/\d+/g).map(Number);
+    return l > 50 ? "#000" : "#fff";
+}
+
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
     title.textContent = `You have ${tasks.length} tasks`;
@@ -203,6 +208,8 @@ function buildProgressRings(tasks) {
         const button = document.querySelector(`.class-tag[data-course-id="${courseId}"]`);
         if (button) {
             button.style.setProperty("--course-color", color);
+            const textColor = getTextColor(color);
+            button.style.setProperty("--text-color", textColor);
         }
 
         
