@@ -44,6 +44,10 @@ function formatCourseCode(code) {
 function renderDashboard(data) {
     currentViewWeek = window.currentViewWeek || getSemesterWeek(new Date());
 
+    if (!window.currentViewWeek) {
+        window.currentViewWeek = getSemesterWeek(new Date());
+    }
+
     // 1. Hide the loading status and placeholders
     const loader = document.getElementById("loading-status");
     if (loader) loader.style.display = "none";
@@ -255,7 +259,16 @@ async function toggleSavedCompletion(id, isAdding, type = 'assignment') {
         
         // Update rings if it was an assignment
         if (type === 'assignment' && typeof buildProgressRings === "function") {
-            buildProgressRings([...db.overdue, ...db.upcoming, ...db.undated]);
+            const allTasks = [...db.overdue, ...db.upcoming, ...db.undated];
+    
+            // Filter by the current week so rings reflect the UI
+            const weeklyTasks = allTasks.filter(task => {
+                if (!task.due_display) return false;
+                const taskWeek = getSemesterWeek(new Date(task.due_display));
+                return taskWeek === (window.currentViewWeek || getSemesterWeek(new Date()));
+            });
+
+            buildProgressRings(weeklyTasks);
         }
     }
 }
