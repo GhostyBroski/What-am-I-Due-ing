@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initDashboard();
     setupAssignmentSlider();  // ← call it here, after DOM is ready
     fullNamehover();
-    buildProgressRings();
 
     chrome.storage.sync.get(["courseTasks"], (data) => {
         const tasks = data.courseTasks || [];
@@ -164,15 +163,15 @@ function buildProgressRings(tasks) {
         // Create a group for the ring pair to handle opacity easily
         const ringGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         if (isDimmed) {
-            ringGroup.style.opacity = "0.2"; // Greys out/fades the ring
-            ringGroup.style.filter = "grayscale(80%)"; // Optional: adds to the "greyed out" look
+            ringGroup.style.opacity = "0.3"; // Greys out/fades the ring
+            ringGroup.style.filter = "grayscale(100%)"; // Optional: adds to the "greyed out" look
         }
         ringGroup.style.transition = "opacity 0.3s ease";
 
         // Background ring
         ringGroup.appendChild(makeCircle({
             r: radius,
-            stroke: "#eee"
+            stroke: "#ccc"
         }));
 
         // Progress ring
@@ -331,7 +330,3 @@ function setupAssignmentSlider() {
         }
     });
 }
-
-
-
-

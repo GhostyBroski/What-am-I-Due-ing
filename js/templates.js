@@ -70,9 +70,9 @@ function renderDashboard(data) {
     const allDated = [...data.overdue, ...data.upcoming];
     renderSection(allDated, containers.upcoming, "");
     
-    if (data.announcements && containers.announcements) {
-        renderAnnouncements(data.announcements, containers.announcements);
-    }
+    // if (data.announcements && containers.announcements) {
+    //     renderAnnouncements(data.announcements, containers.announcements);
+    // }
 
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
