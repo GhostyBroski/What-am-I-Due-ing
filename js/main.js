@@ -43,22 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
     fullNamehover();   // ← ADD THIS LINE
 
     function fullNamehover() {
-    //     document.querySelectorAll(".class-tag").forEach(tag => {
-    //         if (tag.querySelector(".course-tooltip")) return;
-
-    //     const fullName = tag.dataset.fullName;
-    //     if (!fullName) return;
-
-    //     const tooltip = document.createElement("div");
-    //     tooltip.className = "course-tooltip";
-    //     tooltip.textContent = fullName;
-
-    //     tag.appendChild(tooltip);
-    //     // document.body.appendChild(tooltip);
-    // });
+        // 1. Remove any orphaned tooltips before setting up new ones
+        document.querySelectorAll(".course-tooltip").forEach(el => el.remove());
 
         document.querySelectorAll(".class-tag").forEach(tag => {
-
             const fullName = tag.dataset.fullName;
             if (!fullName) return;
 
@@ -68,11 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 tooltip = document.createElement("div");
                 tooltip.className = "course-tooltip";
                 tooltip.textContent = fullName;
-
                 document.body.appendChild(tooltip);
 
                 const rect = tag.getBoundingClientRect();
-
                 tooltip.style.position = "absolute";
                 tooltip.style.top = `${rect.bottom + window.scrollY}px`;
                 tooltip.style.left = `${rect.left + window.scrollX}px`;
@@ -81,8 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
             tag.addEventListener("mouseleave", () => {
                 if (tooltip) tooltip.remove();
             });
-        });
 
+            // 2. ADD THIS: If the user clicks the tag to filter, kill the tooltip immediately
+            tag.addEventListener("click", () => {
+                if (tooltip) tooltip.remove();
+            });
+        });
     }
 
 const headings = {
