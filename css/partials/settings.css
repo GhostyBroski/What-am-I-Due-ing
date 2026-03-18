@@ -1,0 +1,36 @@
+.settings-menu {
+    position: relative;
+    display: inline-block;
+}
+.settings-content {
+    /* display: none; */
+    position: absolute;
+    background-color: rgb(224, 224, 224);
+    min-width: 100px;
+    min-height: 100px;
+    align-content: center;
+    justify-content: center;
+
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+.settings-button img{
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.settings-button:hover img{
+    transform: rotate(12deg);
+}
+.settings-content p {
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+.settings-content.show {
+    /* display: block; */
+
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
