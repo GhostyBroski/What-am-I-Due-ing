@@ -13,7 +13,26 @@
         <header>
             <img id="logo" src="/images/android-chrome-192x192.png" alt="What am I Due-ing logo">
             <h1 id="title">To-Due</h1>
-            <button class="settings-button"><img id="settings-img" src="/images/settings_gear.webp" alt="Settings Button"></button>
+            <div class="settings-menu">
+                <button class="settings-button">
+                <img id="settings-img" src="/images/settings_gear.webp" alt="Settings Button">
+                </button>
+                
+                <div class="settings-content">
+                    <p>Window Size:</p>
+
+                    <form name="w-sizes" id="w-sizes">
+                        <input type="radio" id="smaller" name="sizes" value="Smaller"></input>
+                        <label for="smaller">Smaller (250x300)</label>
+                        <br>
+                        <input type="radio" id="default" name="sizes" value="Default" checked></input>
+                        <label for="default">Default (400x600)</label>
+                        <br>
+                        <input type="radio" id="larger" name="sizes" value="Larger"></input>
+                        <label for="larger">Larger (500x800)</label>
+                    </form>
+                </div>
+            </div>
         </header>
         <main>
         <!-- Progress Circles -->

@@ -29,6 +29,7 @@ header {
     background-color: white;
 }
 #settings-img {
+    padding-top: 10px;
     justify-self: center;
     align-self: center;
     width: 30px;
