@@ -314,6 +314,79 @@ function setupAssignmentSlider() {
      AUTO-REAPPLY WHEN LIST CHANGES
     =============================== */
 
+// Show Settings on click
+const settingsButton = document.querySelector(".settings-button");
+const settingsMenu = document.querySelector(".settings-content");
+
+settingsButton.addEventListener("click", () => {
+    settingsMenu.classList.toggle("show");
+});
+document.addEventListener("click", (event) => {
+    if (!event.target.closest(".settings-menu")) {
+        menubar.classList.remove("show");
+    }
+});
+
+// Window Size
+// const sizeSelect = document.getElementById("w-sizes");
+
+document.querySelectorAll('input[name="sizes"]').forEach(radio => {
+    radio.addEventListener("change", changeWindowSize);
+});
+
+function changeWindowSize() {
+    const selected = document.querySelector('input[name="sizes"]:checked');
+
+    if (!selected) return;
+
+    const size = selected.value;
+    localStorage.setItem("windowSize", size);
+
+    if (size == "Smaller") {
+        resizeWindow(300, 400)
+    }
+    else if (size === "Default") {
+        resizeWindow(400, 600);
+    } 
+    else if (size === "Larger") {
+        resizeWindow(600, 800);
+    }
+}
+function resizeWindow(width, height) {
+    document.body.style.width = width + "px";
+    document.body.style.height = height + "px";
+}
+// Saving Window Size
+window.addEventListener("DOMContentLoaded", () => {
+    const savedSize = localStorage.getItem("windowSize");
+
+    if (!savedSize) return;
+
+    // Select button
+    const radio = document.querySelector(`input[name="sizes"][value="${savedSize}"]`);
+    if (radio) {
+        radio.checked = true;
+    }
+    applySavedSize(savedSize);
+});
+function applySavedSize(size) {
+    if (size === "Smaller") {
+        resizeWindow(300, 400)
+    }
+    else if (size === "Default") {
+        resizeWindow(400, 600);
+    } 
+    else if (size === "Larger") {
+        resizeWindow(600, 800);
+    }
+}
+
+buildProgressRings(); // Initial empty rings
+// });
+initDashboard();
+setupAssignmentSlider();
+
+updateWindowSize();
     const lists = [
         document.getElementById("upcoming-list"),
         document.getElementById("overdue-list"),
