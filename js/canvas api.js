@@ -97,7 +97,8 @@ async function initDashboard() {
             courses: storage.cachedDashboard.courses,
             overdue: (storage.cachedDashboard.overdue || []).map(hydrate),
             upcoming: (storage.cachedDashboard.upcoming || []).map(hydrate),
-            undated: (storage.cachedDashboard.undated || []).map(hydrate)
+            undated: (storage.cachedDashboard.undated || []).map(hydrate),
+            announcements: storage.cachedDashboard.announcements || []
         };
 
         window.lastFetchedData = dashboardData;
