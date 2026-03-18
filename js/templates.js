@@ -44,6 +44,10 @@ function formatCourseCode(code) {
 function renderDashboard(data) {
     currentViewWeek = window.currentViewWeek || getSemesterWeek(new Date());
 
+    if (!window.currentViewWeek) {
+        window.currentViewWeek = getSemesterWeek(new Date());
+    }
+
     // 1. Hide the loading status and placeholders
     const loader = document.getElementById("loading-status");
     if (loader) loader.style.display = "none";
@@ -64,17 +68,34 @@ function renderDashboard(data) {
     // 4. Render the 3 Assignment Sections
     
     const allDated = [...data.overdue, ...data.upcoming];
-    renderSection(allDated, containers.upcoming, "");
-    
-    if (data.announcements && containers.announcements) {
-        renderAnnouncements(data.announcements, containers.announcements);
+
+    const target = document.querySelector(".assign-title");
+
+    if (target) {
+        const title = target.textContent.trim();
+
+        if (title === "Assignments") {
+            renderSection(allDated, containers.upcoming, "");
+        }
+
+        else if (title === "Announcements") {
+            renderAnnouncements(data.announcements, containers.announcements, data.courses);
+        }
+
+        else if (title === "Calendar") {
+            renderCalendar(data); // si tienes una función para esto
+        }
     }
+    
+    // if (data.announcements && containers.announcements) {
+    //     renderAnnouncements(data.announcements, containers.announcements);
+    // }
 
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
         const allTasks = [...data.overdue, ...data.upcoming, ...data.undated];
         
-        // Only tasks in the currently viewed week
+        // Circles display only the current week's tasks
         const weeklyTasks = allTasks.filter(task => {
             if (!task.due_display)
                 return false; // skip undated for the rings, or adjust if you want them
@@ -92,36 +113,134 @@ function renderDashboard(data) {
     }
 }
 
-async function renderAnnouncements(list, container) {
+function renderCalendar(data) {
+    const container = document.getElementById("announcements-list");
     if (!container) return;
+
+    container.innerHTML = "";
+
+    const weekRange = getRangeForWeek(currentViewWeek);
+
+    const all = [...data.overdue, ...data.upcoming];
+
+    const weekItems = all.filter(item => {
+        if (!item.rawDate) return false;
+        const d = new Date(item.rawDate);
+        return d >= weekRange.start && d < weekRange.end;
+    });
+
+    // Build 7-day structure
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(weekRange.start);
+        d.setDate(d.getDate() + i);
+        days.push({
+            date: d,
+            key: d.toDateString(),
+            items: []
+        });
+    }
+
+    // Assign tasks to days
+    weekItems.forEach(item => {
+        const key = new Date(item.rawDate).toDateString();
+        const day = days.find(d => d.key === key);
+        if (day) day.items.push(item);
+    });
+
+
+    // Create scroll wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "calendar-scroll-wrapper";
+
+    // Create grid container
+    const grid = document.createElement("div");
+    grid.className = "calendar-grid";
+
+    // Render each day as a column
+    days.forEach(day => {
+        const col = document.createElement("div");
+        col.className = "calendar-col";
+
+        const dayName = day.date.toLocaleDateString(undefined, { weekday: "short" });
+        const dayNum = day.date.getDate();
+
+        col.innerHTML = `
+            <div class="calendar-header">
+                <strong>${dayName}</strong>
+                <span>${dayNum}</span>
+            </div>
+        `;
+
+        if (day.items.length === 0) {
+            col.innerHTML += `<p class="calendar-empty">No tasks</p>`;
+        } else {
+            day.items.forEach(task => {
+                col.innerHTML += `
+                    <div class="calendar-item">
+                        <strong>${formatCourseCode(task.course_code)}</strong>
+                        <span>${task.name}</span>
+                    </div>
+                `;
+            });
+        }
+
+        grid.appendChild(col);
+    });
+
+    wrapper.appendChild(grid);
+    container.appendChild(wrapper);
+
+}
+
+async function renderAnnouncements(list, container, courses) {
+    if (!container) return;
+
+    // 1. Load read announcements from storage
     const storage = await chrome.storage.local.get("readAnnouncementIds");
     const readIds = storage.readAnnouncementIds || [];
 
+    container.innerHTML = "";
+    container.style.display = list.length > 0 ? "block" : "none";
+
+    // 2. Sort by newest first
     const sorted = [...list].sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at));
 
     sorted.forEach(ann => {
-        const isRead = readIds.includes(ann.id) || ann.read_state === 'read';
-        const section = document.createElement("section");
-        section.className = `todo-item announcement ${isRead ? 'completed' : ''}`;
-        
-        const dateStr = new Date(ann.posted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const isRead = readIds.includes(ann.id);
 
-        section.innerHTML = `
-            <button class="myButton"></button>
-            <h1>${ann.title}</h1>
-            <p>${ann.author} | ${dateStr}</p>
+        const item = document.createElement("section");
+        item.className = `todo-item announcement-item ${isRead ? "completed" : ""}`;
+
+        const courseCode = formatCourseCode(
+            courses.find(c => c.id === ann.course_id)?.course_code || ""
+        );
+
+
+        const dateText = new Date(ann.posted_at).toLocaleString();
+
+        item.innerHTML = `
+            <button class="myButton ${isRead ? "completed" : ""}"></button>
+            <h1>${courseCode}</h1>
+            <h2>${ann.title}</h2>
+            <p>${dateText} — ${ann.author}</p>
         `;
 
-        section.addEventListener("click", () => window.open(ann.link, "_blank"));
-
-        const btn = section.querySelector(".myButton");
+        // 3. Toggle read/unread
+        const btn = item.querySelector(".myButton");
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
-            const nowRead = section.classList.toggle("completed");
-            await toggleSavedCompletion(ann.id, nowRead, 'announcement');
+            const nowRead = item.classList.toggle("completed");
+            btn.classList.toggle("completed", nowRead);
+            await toggleSavedCompletion(ann.id, nowRead, "announcement");
         });
 
-        container.appendChild(section);
+        // 4. Open announcement in Canvas
+        item.addEventListener("click", () => {
+            if (ann.link) window.open(ann.link, "_blank");
+        });
+
+        container.appendChild(item);
     });
 }
 
@@ -255,7 +374,16 @@ async function toggleSavedCompletion(id, isAdding, type = 'assignment') {
         
         // Update rings if it was an assignment
         if (type === 'assignment' && typeof buildProgressRings === "function") {
-            buildProgressRings([...db.overdue, ...db.upcoming, ...db.undated]);
+            const allTasks = [...db.overdue, ...db.upcoming, ...db.undated];
+    
+            // Filter by the current week so rings reflect the UI
+            const weeklyTasks = allTasks.filter(task => {
+                if (!task.due_display) return false;
+                const taskWeek = getSemesterWeek(new Date(task.due_display));
+                return taskWeek === (window.currentViewWeek || getSemesterWeek(new Date()));
+            });
+
+            buildProgressRings(weeklyTasks);
         }
     }
 }
@@ -268,6 +396,7 @@ function renderCourseList(courses, fullData) {
     courses.forEach(course => {
         const tag = document.createElement("section");
         tag.className = "class-tag";
+        tag.dataset.courseId = course.id;
         if (window.selectedCourseId === course.id) tag.classList.add("active");
         
         tag.dataset.fullName = course.name;
@@ -298,6 +427,22 @@ document.getElementById("next-week").addEventListener("click", () => {
     }
 });
 
+function watchAssignTitle() {
+    const target = document.querySelector(".assign-title");
+    if (!target) return;
+
+    const observer = new MutationObserver(() => {
+        console.log("🔄 Title changed → re-rendering dashboard");
+        if (window.lastFetchedData) {
+            renderDashboard(window.lastFetchedData);
+        }
+    });
+
+    observer.observe(target, { childList: true, characterData: true, subtree: true });
+}
+
 // Export functions for use in main.js
 window.renderDashboard = renderDashboard;
 window.formatCourseCode = formatCourseCode;
+
+document.addEventListener("DOMContentLoaded", watchAssignTitle);

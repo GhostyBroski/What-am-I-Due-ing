@@ -97,7 +97,8 @@ async function initDashboard() {
             courses: storage.cachedDashboard.courses,
             overdue: (storage.cachedDashboard.overdue || []).map(hydrate),
             upcoming: (storage.cachedDashboard.upcoming || []).map(hydrate),
-            undated: (storage.cachedDashboard.undated || []).map(hydrate)
+            undated: (storage.cachedDashboard.undated || []).map(hydrate),
+            announcements: storage.cachedDashboard.announcements || []
         };
 
         window.lastFetchedData = dashboardData;
@@ -115,6 +116,9 @@ async function fetchCanvasDashboard() {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json'
     };
+
+    const localData = await chrome.storage.local.get("completedIds");
+    const completedIds = localData.completedIds || [];
 
     try {
         console.log("🚀 Starting Data-Rich Dashboard...");
@@ -164,10 +168,13 @@ async function fetchCanvasDashboard() {
 
             const processItem = (asm) => {
                 const isMarkedDone = asm.planner_overrides?.some(o => o.dismissed || o.marked_complete);
+                const isManuallyDone = completedIds.includes(asm.id);
                 const status = asm.submission ? asm.submission.workflow_state : 'unsubmitted';
-                
-                const isFinished = isMarkedDone || status === 'submitted' || status === 'graded';
 
+                const hasScore = asm.submission && (asm.submission.grade !== null || asm.submission.excused);
+                
+                const isFinished = isMarkedDone || status === 'submitted' || status === 'graded' || hasScore || isManuallyDone;
+                
                 return {
                     course_id: asm.course_id,
                     course_name: course.name,

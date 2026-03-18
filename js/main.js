@@ -3,13 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAssignmentSlider();  // ← call it here, after DOM is ready
     fullNamehover();
 
-    // Class Tag Redirects
-
-    // const classLinks = [
-    //   "https://byui.instructure.com/courses/310",
-    //   "https://byui.instructure.com/courses/212",
-    //   "https://byui.instructure.com/courses/999"
-    // ];
     chrome.storage.sync.get(["courseTasks"], (data) => {
         const tasks = data.courseTasks || [];
     
@@ -49,22 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
     fullNamehover();   // ← ADD THIS LINE
 
     function fullNamehover() {
-    //     document.querySelectorAll(".class-tag").forEach(tag => {
-    //         if (tag.querySelector(".course-tooltip")) return;
-
-    //     const fullName = tag.dataset.fullName;
-    //     if (!fullName) return;
-
-    //     const tooltip = document.createElement("div");
-    //     tooltip.className = "course-tooltip";
-    //     tooltip.textContent = fullName;
-
-    //     tag.appendChild(tooltip);
-    //     // document.body.appendChild(tooltip);
-    // });
+        // 1. Remove any orphaned tooltips before setting up new ones
+        document.querySelectorAll(".course-tooltip").forEach(el => el.remove());
 
         document.querySelectorAll(".class-tag").forEach(tag => {
-
             const fullName = tag.dataset.fullName;
             if (!fullName) return;
 
@@ -74,11 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 tooltip = document.createElement("div");
                 tooltip.className = "course-tooltip";
                 tooltip.textContent = fullName;
-
                 document.body.appendChild(tooltip);
 
                 const rect = tag.getBoundingClientRect();
-
                 tooltip.style.position = "absolute";
                 tooltip.style.top = `${rect.bottom + window.scrollY}px`;
                 tooltip.style.left = `${rect.left + window.scrollX}px`;
@@ -87,8 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
             tag.addEventListener("mouseleave", () => {
                 if (tooltip) tooltip.remove();
             });
-        });
 
+            // 2. ADD THIS: If the user clicks the tag to filter, kill the tooltip immediately
+            tag.addEventListener("click", () => {
+                if (tooltip) tooltip.remove();
+            });
+        });
     }
 
 const headings = {
@@ -138,35 +121,7 @@ leftBar.addEventListener("click", () => {
 render_headings();
 
 
-  // 3. The Midnight Checker (Moved inside so it can access todoItems)
-  function checkMidnight() {
-    const now = new Date();
-    const todoItems = document.querySelectorAll(".todo-item");
-    // Check if it's 00:00 (Midnight)
-    if (now.getHours() === 0 && now.getMinutes() === 0) {
-        console.log("Midnight cleanup triggered...");
-        
-        todoItems.forEach(item => {
-            // Check if the h1 inside this item has the 'completed' class
-            const title = item.querySelector("h1");
-            if (title && title.classList.contains("completed")) {
-                
-                // Visual Fade Out
-                item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-                item.style.opacity = "0";
-                item.style.transform = "translateX(20px)";
-                
-                setTimeout(() => {
-                    item.remove();
-                }, 500);
-            }
-        });
-    }
-  }
-
-  // Run the check every 60 seconds
-  setInterval(checkMidnight, 60000);
-
+const courseColors = {};
 
 function buildProgressRings(tasks) {
     const title = document.getElementById("ring-title");
@@ -176,39 +131,58 @@ function buildProgressRings(tasks) {
     svg.innerHTML = "";
 
     const grouped = groupByCourse(tasks);
-
-    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length); // Sort by number of tasks
+    const courses = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
 
     const maxRadius = 65;
     const minRadius = 15;
     const availableSpace = maxRadius - minRadius;
-    const thickness = availableSpace / courses.length * 0.8;
-    const gap = availableSpace / courses.length * 0.2;
+    const thickness = (courses.length > 0) ? (availableSpace / courses.length * 0.8) : 8;
+    const gap = (courses.length > 0) ? (availableSpace / courses.length * 0.2) : 2;
 
     let radius = minRadius;
 
-    courses.forEach(([, courseTasks], index) => {
-
+    courses.forEach(([courseId, courseTasks], index) => {
         const total = courseTasks.length;
         const completed = courseTasks.filter(t => t.isFinished).length;
         const percent = total === 0 ? 0 : completed / total;
 
-        const hue = (index *360) / courses.length;
+        const hue = (index * 360) / courses.length;
         const color = `hsl(${hue}, 70%, 50%)`;
+        
+        courseColors[courseId] = color;
+
+        // Check if we are currently filtering by a specific course
+        // window.selectedCourseId comes from templates.js
+        const isDimmed = window.selectedCourseId && window.selectedCourseId != courseId;
+
+        const button = document.querySelector(`.class-tag[data-course-id="${courseId}"]`);
+        if (button) {
+            button.style.setProperty("--course-color", color);
+        }
+
+        // Create a group for the ring pair to handle opacity easily
+        const ringGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        if (isDimmed) {
+            ringGroup.style.opacity = "0.3"; // Greys out/fades the ring
+            ringGroup.style.filter = "grayscale(100%)"; // Optional: adds to the "greyed out" look
+        }
+        ringGroup.style.transition = "opacity 0.3s ease";
+
         // Background ring
-        svg.appendChild(makeCircle({
+        ringGroup.appendChild(makeCircle({
             r: radius,
-            stroke: "#eee"
+            stroke: "#ccc"
         }));
 
         // Progress ring
-        svg.appendChild(makeCircle({
+        ringGroup.appendChild(makeCircle({
             r: radius,
             stroke: color,
             percent,
             className: "progress-ring"
         }));
 
+        svg.appendChild(ringGroup);
         radius += thickness + gap;
     });
 }
@@ -252,6 +226,7 @@ function groupByCourse(tasks) {
 }
 
 function setupAssignmentSlider() {
+
     const sliderTrack = document.getElementById("assignments-shown-slider");
     const sliderThumb = document.getElementById("slider-status");
 
@@ -260,6 +235,7 @@ function setupAssignmentSlider() {
     let showAll = true;
 
     function applyFilter() {
+
         const lists = [
             document.getElementById("upcoming-list"),
             document.getElementById("overdue-list"),
@@ -267,9 +243,11 @@ function setupAssignmentSlider() {
         ];
 
         lists.forEach(list => {
+
             if (!list) return;
 
             const children = Array.from(list.children);
+
             let currentHeader = null;
             let visibleInGroup = 0;
 
@@ -278,13 +256,14 @@ function setupAssignmentSlider() {
                 if (el.classList.contains("date-header")) {
 
                     if (currentHeader) {
-                        currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+                        currentHeader.style.display =
+                            visibleInGroup === 0 ? "none" : "";
                     }
 
                     currentHeader = el;
                     visibleInGroup = 0;
+                }
 
-                } 
                 else if (el.classList.contains("todo-item")) {
 
                     const isCompleted = el.classList.contains("completed");
@@ -297,43 +276,43 @@ function setupAssignmentSlider() {
             });
 
             if (currentHeader) {
-                currentHeader.style.display = visibleInGroup === 0 ? "none" : "";
+                currentHeader.style.display =
+                    visibleInGroup === 0 ? "none" : "";
             }
         });
     }
 
-    // Load saved slider state
+    /* ===============================
+       LOAD SAVED STATE
+    =============================== */
+
     chrome.storage.local.get(["showAllAssignments"], (data) => {
 
         showAll = data.showAllAssignments ?? true;
 
-        // Set slider position
         sliderThumb.classList.toggle("active", showAll);
 
-        // Apply filter after assignments load
-        setTimeout(() => {
-            applyFilter();
-        }, 200);
+        applyFilter();
     });
 
-    // Slider toggle
+    /* ===============================
+       CLICK HANDLER
+    =============================== */
+
     sliderTrack.addEventListener("click", () => {
 
         showAll = !showAll;
 
         sliderThumb.classList.toggle("active", showAll);
 
-        // Save state
-        chrome.storage.local.set({
-            showAllAssignments: showAll
-        });
+        chrome.storage.local.set({ showAllAssignments: showAll });
 
         applyFilter();
     });
 
-    document.getElementById("prev-week")?.addEventListener("click", applyFilter);
-    document.getElementById("next-week")?.addEventListener("click", applyFilter);
-}
+    /* ===============================
+     AUTO-REAPPLY WHEN LIST CHANGES
+    =============================== */
 
 // Show Settings on click
 const settingsButton = document.querySelector(".settings-button");
@@ -408,3 +387,19 @@ initDashboard();
 setupAssignmentSlider();
 
 updateWindowSize();
+    const lists = [
+        document.getElementById("upcoming-list"),
+        document.getElementById("overdue-list"),
+        document.getElementById("undated-list")
+    ];
+
+    const observer = new MutationObserver(() => {
+        applyFilter();
+    });
+
+    lists.forEach(list => {
+        if (list) {
+            observer.observe(list, { childList: true });
+        }
+    });
+}
