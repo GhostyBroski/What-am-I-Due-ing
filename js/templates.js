@@ -95,7 +95,7 @@ function renderDashboard(data) {
         // Combine all tasks for the rings
         const allTasks = [...data.overdue, ...data.upcoming, ...data.undated];
         
-        // Only tasks in the currently viewed week
+        // Circles display only the current week's tasks
         const weeklyTasks = allTasks.filter(task => {
             if (!task.due_display)
                 return false; // skip undated for the rings, or adjust if you want them
