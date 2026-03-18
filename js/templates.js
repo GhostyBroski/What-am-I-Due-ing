@@ -86,10 +86,6 @@ function renderDashboard(data) {
             renderCalendar(data); // si tienes una función para esto
         }
     }
-    
-    // if (data.announcements && containers.announcements) {
-    //     renderAnnouncements(data.announcements, containers.announcements);
-    // }
 
     if (typeof buildProgressRings === "function") {
         // Combine all tasks for the rings
@@ -334,11 +330,6 @@ async function renderSection(list, container, extraClass) {
 
         container.appendChild(item);
     });
-
-    // const weekIndicator = document.querySelector(".assign-week");
-    // if (weekIndicator) {
-    //     weekIndicator.textContent = `Week ${getSemesterWeek(new Date())}`;
-    // }
 }
 
 // Helper to save to Chrome Storage

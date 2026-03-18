@@ -19,10 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(url, "_blank");
         });
     });
-    //Slider buton to show all or only uncompleted assignments
-    // function sliderViewAssignments("#slider-status"){
-    //     button.addEventListener()
-    // }
+
     // Complete Button Line-through and Check Mark 
     // Shows what is completed and gives user ability to check completed
     document.querySelectorAll(".todo-item").forEach(item => {

@@ -40,17 +40,6 @@ main > div:last-child {
     transform: translateY(-1px);
 }
 
-/* Checkbox button */
-/* .todo-item button {
-    grid-row: 2 / 3;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #777;
-    background: none;
-    cursor: pointer;
-} */
-
 /* Course code */
 .todo-item h1 {
     font-size: 0.8rem;

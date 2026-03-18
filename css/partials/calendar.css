@@ -1,0 +1,59 @@
+.calendar-col {
+    background: var(--panel-bg, #ffffff);
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 120px;
+    box-shadow: var(--shadow-soft);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.calendar-item {
+    background: var(--item-bg, #f5f5f5);
+    padding: 6px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.calendar-item:hover {
+    background: var(--item-hover, #eaeaea);
+}
+
+.calendar-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.calendar-scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color, #888) transparent;
+}
+
+/* For Chrome */
+.calendar-scroll-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: var(--accent-color, #888);
+    border-radius: 4px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 180px); /* ancho fijo por columna */
+    gap: 12px;
+    padding: 10px 0;
+}
