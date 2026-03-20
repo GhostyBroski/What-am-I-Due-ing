@@ -108,3 +108,7 @@ header {
 .nav-btn:hover {
     color: #000;
 }
+
+.right-assign, .left-assign {
+    cursor: pointer;
+}
