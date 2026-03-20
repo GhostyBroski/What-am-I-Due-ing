@@ -289,7 +289,9 @@ function setupAssignmentSlider() {
 
         sliderThumb.classList.toggle("active", showAll);
 
-        applyFilter();
+        setTimeout(() => {
+            applyFilter();
+        }, 200);
     });
 
     /* ===============================

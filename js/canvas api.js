@@ -9,6 +9,75 @@ const config = {
     }
 };
 
+// async function startOAuth() {
+//     const CLIENT_ID = 'YOUR_CANVAS_CLIENT_ID';
+//     const REDIRECT_URI = chrome.identity.getRedirectURL(); // Generates the https://<id>.chromiumapp.org/ URL
+    
+//     const authUrl = `https://byui.instructure.com/login/oauth2/auth?` +
+//                     `client_id=${CLIENT_ID}&` +
+//                     `response_type=code&` +
+//                     `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+//                     `scope=url_scopes_here`;
+
+//     chrome.identity.launchWebAuthFlow({
+//         url: authUrl,
+//         interactive: true
+//     }, async (redirectUrl) => {
+//         if (chrome.runtime.lastError || !redirectUrl) {
+//             console.error("Auth failed:", chrome.runtime.lastError);
+//             return;
+//         }
+
+//         // Extract the temporary code from the URL
+//         const url = new URL(redirectUrl);
+//         const code = url.searchParams.get('code');
+
+//         // Step 3: Send this code to your PROXY, not directly to Canvas
+//         const tokenData = await exchangeCodeViaProxy(code);
+        
+//         // Save the token for future use
+//         chrome.storage.local.set({ canvasToken: tokenData.access_token });
+//     });
+// }
+
+// async function handleLogin() {
+//     const CLIENT_ID = "YOUR_CLIENT_ID";
+//     // This is a special URL Chrome generates for your specific extension
+//     const REDIRECT_URI = chrome.identity.getRedirectURL(); 
+    
+//     const authUrl = `https://byui.instructure.com/login/oauth2/auth?` +
+//         `client_id=${CLIENT_ID}&` +
+//         `response_type=code&` +
+//         `redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+
+//     // 1. Open the Canvas Login Window
+//     chrome.identity.launchWebAuthFlow({
+//         url: authUrl,
+//         interactive: true
+//     }, async (responseUrl) => {
+//         const url = new URL(responseUrl);
+//         const code = url.searchParams.get('code');
+
+//         // 2. Send the code to your NEW Vercel proxy
+//         const tokenResponse = await fetch('https://vercel.com/ghostybroskis-projects/whatamidueing', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ 
+//                 code: code,
+//                 redirect_uri: REDIRECT_URI
+//             })
+//         });
+
+//         const data = await tokenResponse.json();
+        
+//         // 3. Save the token and refresh the dashboard!
+//         if (data.access_token) {
+//             await chrome.storage.local.set({ canvasToken: data.access_token });
+//             fetchCanvasDashboard(); 
+//         }
+//     });
+// }
+
 async function initDashboard() {
     // 1. Set the initial week to "Now"
     if (typeof getSemesterWeek === "function") {
@@ -231,6 +300,11 @@ async function fetchCanvasDashboard() {
 
         if (typeof window.renderDashboard === "function") {
             window.renderDashboard(dashboardData);
+            if (typeof applyFilter === "function") {
+                applyFilter();
+            } else {
+                setupAssignmentSlider();
+            }
         } else {
             console.error("renderDashboard is not defined. Check if templates.js loaded correctly.");
         }
