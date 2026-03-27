@@ -15,29 +15,31 @@ Click Load unpacked and select the folder containing your extension files.
 
 -Checking Progress: Look at the Progress Rings section. Each colored ring represents a different course; a full ring means all tracked assignments for that course are done.
 
+-Announcments and Calender: Click the anouncment or calender icon and the view of assignments will change to announcments or calender view. 
+
 
 **Features**
 1. Live Canvas Sync
-The extension automatically scrapes and syncs data from two sources:
+  The extension automatically scrapes and syncs data from two sources:
 
-Global Dashboard: Tracks the "To-Do" sidebar on the main Canvas dashboard.
+  Global Dashboard: Tracks the "To-Do" sidebar on the main Canvas dashboard.
 
-Course Pages: Scrapes specific assignment lists when you visit individual course pages.
+  Course Pages: Scrapes specific assignment lists when you visit individual course pages.
 
-API Integration: Uses a Canvas Access Token to pull real-time data on active courses, overdue assignments, and upcoming deadlines.
+  API Integration: Uses a Canvas Access Token to pull real-time data on active courses, overdue assignments, and upcoming deadlines.
 
 2. Interactive Assignment Dashboard
-Status Slider: Toggle between viewing all assignments or only pending/unsubmitted tasks.
+  Status Slider: Toggle between viewing all assignments or only pending/unsubmitted tasks.
 
-Visual Progress Rings: Multi-layered SVG rings that visualize your completion percentage for each course.
+  Visual Progress Rings: Multi-layered progress rings that visualize your completion percentage for each course.
 
-Weekly Navigation: View assignments organized by semester weeks (e.g., Week 7).
+  Weekly Navigation: View assignments organized by semester weeks (e.g., Week 7).
 
-Category Switching: Quickly cycle between Assignments, Announcements, and Calendar views using the header navigation.
+  Category Switching: Quickly cycle between Assignments, Announcements, and Calendar views using the header navigation.
+
+  Window Size: Setting icon provides 3 window size options and extention will scale according to size user chooses.
 
 3. Smart Task Management
-Manual Completion: Toggle a "check-off" state on tasks for immediate visual feedback.
+  Manual Completion: Toggle a "check-off" state on tasks for immediate visual feedback.
 
-Midnight Cleanup: An automated system that "cleans" your dashboard every night at midnight, fading out and removing tasks marked as completed.
-
-Course Tooltips: Hover over course tags to see the full course name (e.g., "CSE 310" → "Applied Programming").
+  Course Tooltips: Hover over course tags to see the full course name (e.g., "CSE 310" → "Applied Programming").
