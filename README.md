@@ -94,5 +94,6 @@ AI
 GitHub
 more...
 
-
-
+## Future Work
+- User API access from Canvas
+- Themes option
