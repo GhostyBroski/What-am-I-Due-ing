@@ -97,3 +97,14 @@ more...
 ## Future Work
 - User API access from Canvas
 - Themes option
+
+## Reflection
+What the team Learned?
+New programming languages, team work/working in 2 week sprints, how extensions work, applying API's properly and legally. Reaserch techiques, how to use AI, workshopping, testing as we go.
+
+What can be Improved?
+Color themes, commenting sections and definitions in the code. 
+
+## Future Work
+- Proper Authorization User API access from Canvas
+- Themes option
